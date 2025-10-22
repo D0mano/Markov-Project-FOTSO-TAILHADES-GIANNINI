@@ -6,5 +6,6 @@ set(CMAKE_C_STANDARD 11)
 add_executable(TI_301_PJT
         main.c utils.c
         hasse.h
-        hasse.c)
+        hasse.c
+        data/types.h)
 
