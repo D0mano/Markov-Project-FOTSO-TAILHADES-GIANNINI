@@ -57,6 +57,8 @@ void displayAdjList(t_adjacency_list* adj) {
 }
 
 
+
+
 void removeTransitiveLinks(t_link_array *p_link_array)
 {
     int i = 0;
@@ -102,3 +104,35 @@ void removeTransitiveLinks(t_link_array *p_link_array)
         }
     }
 }
+
+t_adjacency_list* readGraph(const char *filename) {
+    FILE *file = fopen(filename, "rt");
+    if (file == NULL) {
+        perror("Could not open file for reading");
+        exit(EXIT_FAILURE);
+    }
+
+    int nbvert, start, end;
+    float proba;
+
+    if (fscanf(file, "%d", &nbvert) != 1) {
+        perror("Could not read number of vertices");
+        fclose(file);
+        exit(EXIT_FAILURE);
+    }
+
+    t_adjacency_list *graph = createAdjList(nbvert);
+
+    while (fscanf(file, "%d %d %f", &start, &end, &proba) == 3) {
+        addCell(&(graph->tab[start - 1]), end);
+    }
+
+    fclose(file);
+    return graph;
+}
+
+
+
+
+
+
