@@ -105,6 +105,22 @@ void removeTransitiveLinks(t_link_array *p_link_array)
     }
 }
 
+void freeAdjList(t_adjacency_list* adj) {
+    if (adj == NULL) {
+        return;
+    }
+    for (int i = 0; i < adj->size; i++) {
+        t_cell* current = adj->tab[i].head;
+        while (current != NULL) {
+            t_cell* to_free = current;
+            current = current->next;
+            free(to_free);
+        }
+    }
+    free(adj->tab);
+    free(adj);
+}
+
 t_adjacency_list* readGraph(const char *filename) {
     FILE *file = fopen(filename, "rt");
     if (file == NULL) {

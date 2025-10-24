@@ -63,6 +63,7 @@ void displayAdjList(t_adjacency_list* adj);
 
 
 void removeTransitiveLinks(t_link_array *p_link_array);
+t_adjacency_list* readGraph(const char *filename);
 
 /**
  * @brief Creates a link array from the given partition and graph.
@@ -71,5 +72,6 @@ void removeTransitiveLinks(t_link_array *p_link_array);
  * @param graph The adjacency list representation of the graph.
  * @return The created link array.
  */
+void freeAdjList(t_adjacency_list* adj);
 
 #endif
