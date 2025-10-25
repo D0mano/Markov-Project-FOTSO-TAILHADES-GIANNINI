@@ -4,9 +4,10 @@
 #include <stdio.h>
 #include "types.h"
 
-t_cell* createCell(int value) {
+t_cell* createCell(int arrival_vertex, float prob) {
     t_cell* cell = (t_cell*) malloc(sizeof(t_cell));
-    cell->value = value;
+    cell->arrival_vertex = arrival_vertex;
+    cell->probability = prob;
     cell->next = NULL;
     cell->arrival = NULL;
     return cell;
@@ -19,8 +20,8 @@ t_list createEmptyList() {
 int isEmptyList(t_list list) {
     return list.head == NULL;
 }
-void addCell(t_list* list,int val) {
-    t_cell* new_cell = createCell(val);
+void addCell(t_list* list, int arrival_vertex, float prob) {
+    t_cell* new_cell = createCell(arrival_vertex, prob);
     if (isEmptyList(*list)) {
         list->head = new_cell;
     }else {
@@ -28,6 +29,7 @@ void addCell(t_list* list,int val) {
         while (cur->next != NULL) {
             cur = cur->next;
         }
+        new_cell->arrival = cur;
         cur->next = new_cell;
     }
 }
@@ -35,7 +37,7 @@ void displayList(t_list list){
     t_cell* cur = list.head;
     printf("[head|@]->");
     while (cur != NULL) {
-        printf("[%d|@]->", cur->value);
+        printf("[(%d, %g)|@]->", cur->arrival_vertex, cur->probability);
         cur = cur->next;
     }
     printf("NULL\n");
@@ -140,7 +142,7 @@ t_adjacency_list* readGraph(const char *filename) {
     t_adjacency_list *graph = createAdjList(nbvert);
 
     while (fscanf(file, "%d %d %f", &start, &end, &proba) == 3) {
-        addCell(&(graph->tab[start - 1]), end);
+        addCell(&(graph->tab[start - 1]), end, proba);
     }
 
     fclose(file);

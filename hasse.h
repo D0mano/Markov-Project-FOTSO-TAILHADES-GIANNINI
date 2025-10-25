@@ -6,7 +6,8 @@
 typedef struct s_cell{
     struct s_cell* arrival;
     struct s_cell* next;
-    int value;
+    int arrival_vertex;
+    float probability;
 }t_cell;
 
 typedef struct s_list {
@@ -24,7 +25,7 @@ typedef struct s_adjacency_list {
  * @param value The value in the cell
  * @return t_cell*  A pointers to a t_cell
  */
-t_cell* createCell(int value);
+t_cell* createCell(int edge, float prob);
 
 /**
  * @brief Create an Empty linked list
@@ -44,7 +45,7 @@ int isEmptyList(t_list list);
  * @param list The list where the value will be added
  * @param val The value to be added to the list
  */
-void addCell(t_list* list,int val);
+void addCell(t_list* list,int edge, float prob);
 
 /**
  *
