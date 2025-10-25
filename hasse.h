@@ -8,7 +8,9 @@ typedef struct s_cell{
     struct s_cell* next;
     int arrival_vertex;
     float probability;
-}t_cell;
+} t_cell;
+
+typedef t_cell* p_cell;
 
 typedef struct s_list {
     t_cell* head;
@@ -17,8 +19,7 @@ typedef struct s_list {
 typedef struct s_adjacency_list {
     int size;
     t_list* tab;
-
-}t_adjacency_list;
+} t_adjacency_list;
 
 /**
  * @brief Create a cell with tha value
@@ -74,5 +75,7 @@ t_adjacency_list* readGraph(const char *filename);
  * @return The created link array.
  */
 void freeAdjList(t_adjacency_list* adj);
+
+void isMarkov(t_adjacency_list* adj);
 
 #endif

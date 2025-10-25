@@ -15,6 +15,7 @@ int main() {
     // Display the graph to verify it was read correctly
     printf("\n--- Adjacency List read from file: ---\n");
     displayAdjList(graph);
+    isMarkov(graph);
 
     // Free the allocated memory for the graph
     printf("\n--- Freeing graph memory ---\n");

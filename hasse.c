@@ -58,9 +58,6 @@ void displayAdjList(t_adjacency_list* adj) {
     }
 }
 
-
-
-
 void removeTransitiveLinks(t_link_array *p_link_array)
 {
     int i = 0;
@@ -149,6 +146,24 @@ t_adjacency_list* readGraph(const char *filename) {
     return graph;
 }
 
+void isMarkov(t_adjacency_list* adj) {
+    for (int i = 0; i < adj->size; i++) {
+        t_list list = adj->tab[i];
+        p_cell curr = list.head;
+        float sum = 0;
+        while (curr != NULL) {
+            sum += curr->probability;
+            curr = curr->next;
+        }
+        if (sum > 1.01 || sum < 0.99) {
+            printf("The graph is not a Markov graph\n");
+            printf("The sum of vertex %d is %g\n", i, sum);
+            return;
+        }
+    }
+    printf("The graph is a Markov graph\n");
+    printf("For each vertex, the sum of probabilities is 1\n");
+}
 
 
 
