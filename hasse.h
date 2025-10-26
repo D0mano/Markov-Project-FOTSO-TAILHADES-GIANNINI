@@ -22,11 +22,12 @@ typedef struct s_adjacency_list {
 } t_adjacency_list;
 
 /**
- * @brief Create a cell with tha value
- * @param value The value in the cell
- * @return t_cell*  A pointers to a t_cell
+ * @brief Create a cell with the value
+ * @param vertice An int representing the vertice
+ * @param prob A float representing the probability of the vertice
+ * @return A pointers to a t_cell
  */
-t_cell* createCell(int edge, float prob);
+t_cell* createCell(int vertice, float prob);
 
 /**
  * @brief Create an Empty linked list
@@ -35,21 +36,22 @@ t_cell* createCell(int edge, float prob);
 t_list createEmptyList();
 
 /**
- *
+ * @brief Check if the linked list is Empty
  * @param list The list who will be verified
  * @return
  */
 int isEmptyList(t_list list);
 
 /**
- * @brief Add a cell with the value in the list
- * @param list The list where the value will be added
- * @param val The value to be added to the list
+ * @brief Add a cell with the vertice and his probability in the list
+ * @param list The list where the vertice will be added
+ * @param vertice An int representing the vertice added to the linked list
+ * @param prob A float representing the probability of the added vertice
  */
-void addCell(t_list* list,int edge, float prob);
+void addCell(t_list* list,int vertice, float prob);
 
 /**
- *
+ * @brief Display the linked list
  * @param list The list to be displayed
  */
 void displayList(t_list list);
@@ -57,10 +59,14 @@ void displayList(t_list list);
 /**
  *
  * @param nb_vertices The size of your adjacency list
- * @return
+ * @return The adjacency list
  */
 t_adjacency_list* createAdjList(int nb_vertices);
 
+/**
+ * @brief Display an adjacency list
+ * @param adj The adjacency list to be displayed
+ */
 void displayAdjList(t_adjacency_list* adj);
 
 
@@ -76,6 +82,23 @@ t_adjacency_list* readGraph(const char *filename);
  */
 void freeAdjList(t_adjacency_list* adj);
 
+/**
+ * @brief Check if the adjacency list is a Markov graph
+ * @param adj The adjacency list to be verified
+ */
 void isMarkov(t_adjacency_list* adj);
 
+/**
+ * @brief Give you a string of character associated with an integer
+ * @param num The number to be converted
+ * @return The associated string character
+ */
+char* getID(int num);
+
+
+/**
+ * @brief Convert a markov graph into a text file containing the mermaid code of the graph
+ * @param adj The adjacency list
+ */
+void Markov_to_graph(t_adjacency_list* adj);
 #endif

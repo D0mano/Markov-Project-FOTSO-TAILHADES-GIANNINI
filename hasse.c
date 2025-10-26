@@ -2,6 +2,7 @@
 #include "hasse.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "types.h"
 
 t_cell* createCell(int arrival_vertex, float prob) {
@@ -155,7 +156,7 @@ void isMarkov(t_adjacency_list* adj) {
             sum += curr->probability;
             curr = curr->next;
         }
-        if (sum > 1.01 || sum < 0.99) {
+        if (sum > 1 || sum < 0.99) {
             printf("The graph is not a Markov graph\n");
             printf("The sum of vertex %d is %g\n", i, sum);
             return;
@@ -165,6 +166,63 @@ void isMarkov(t_adjacency_list* adj) {
     printf("For each vertex, the sum of probabilities is 1\n");
 }
 
+char *getID(int num) {
+    if (num < 1) {
+        return NULL;
+    }
+
+    // Calculate the length needed for the result
+    int len = 0;
+    int temp = num;
+    while (temp > 0) {
+        len++;
+        temp = (temp - 1) / 26;
+    }
+
+    // Allocate memory for the result (+1 for null terminator)
+    char *result = (char *)malloc((len + 1) * sizeof(char));
+    if (result == NULL) {
+        return NULL;
+    }
+
+    // Fill the string from right to left
+    result[len] = '\0';
+    temp = num;
+
+    for (int i = len - 1; i >= 0; i--) {
+        temp--;
+        result[i] = 'A' + (temp % 26);
+        temp /= 26;
+    }
+
+    return result;
+}
+
+void Markov_to_graph(t_adjacency_list* adj) {
+    FILE* graph;
+    graph = fopen("../graph.txt", "w");
+    fprintf(graph,"---\n"
+                        "config:\n"
+                        "   theme: neo\n"
+                        "   look: neo\n"
+                        "   layout: elk\n"
+                        "---");
+    fprintf(graph, "\n\n"
+                        "flowchart LR\n");
+    for (int i = 0; i < adj->size; i++) {
+        fprintf(graph,"%s((%d))\n",getID(i+1),i+1);
+    }
+    fprintf(graph, "\n");
+    for (int i = 0; i < adj->size; i++) {
+        t_list list = adj->tab[i];
+        t_cell* cur = list.head;
+        while (cur != NULL) {
+            fprintf(graph,"%s -->|%.2f|%s\n",getID(i+1),cur->probability,getID(cur->arrival_vertex));
+            cur = cur->next;
+        }
+    }
+    fclose(graph);
+}
 
 
 

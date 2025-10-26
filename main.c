@@ -5,12 +5,13 @@
 
 
 int main() {
-    const char* filename = "../data/exemple1_chatGPT_fixed.txt";
+    const char* filename = "../data/exemple_valid_step3.txt";
 
     printf("--- Testing readGraph function with '%s' ---\n", filename);
 
     // Read the graph from the file
     t_adjacency_list* graph = readGraph(filename);
+    Markov_to_graph(graph);
 
     // Display the graph to verify it was read correctly
     printf("\n--- Adjacency List read from file: ---\n");
