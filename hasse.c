@@ -224,6 +224,49 @@ void Markov_to_graph(t_adjacency_list* adj) {
     fclose(graph);
 }
 
+t_tarjan_vertex *initTarjanVertices(int n) {
+    t_tarjan_vertex *vertices = malloc(n * sizeof(t_tarjan_vertex));
+    for (int i = 0; i < n; i++) {
+        vertices[i].id = i;
+        vertices[i].num = -1;
+        vertices[i].lowlink = -1;
+        vertices[i].inStack = 0;
+    }
+    return vertices;
+}
+
+t_class *createClass(const char *name) {
+    t_class *c = malloc(sizeof(t_class));
+    strcpy(c->name, name);
+    c->size = 0;
+    c->capacity = 4;
+    c->vertices = malloc(c->capacity * sizeof(t_tarjan_vertex *));
+    return c;
+}
+
+t_partition *createPartition() {
+    t_partition *p = malloc(sizeof(t_partition));
+    p->size = 0;
+    p->capacity = 4;
+    p->classes = malloc(p->capacity * sizeof(t_class *));
+    return p;
+}
+
+
+t_stack *createStack(int capacity) {
+    t_stack *s = malloc(sizeof(t_stack));
+    s->data = malloc(capacity * sizeof(int));
+    s->top = -1;
+    s->capacity = capacity;
+    return s;
+}
+
+void push(t_stack *s, int v) { s->data[++s->top] = v; }
+int pop(t_stack *s) { return s->data[s->top--]; }
+int isEmpty(t_stack *s) { return s->top == -1; }
+
+
+
 
 
 

@@ -71,6 +71,13 @@ void displayAdjList(t_adjacency_list* adj);
 
 
 void removeTransitiveLinks(t_link_array *p_link_array);
+
+/**
+ * @brief Read a graph from a file and return the adjacency list representation.
+ *
+ * @param filename The name of the file from which the graph will be read.
+ * @return The adjacency list representation of the graph.
+*/
 t_adjacency_list* readGraph(const char *filename);
 
 /**
@@ -101,4 +108,51 @@ char* getID(int num);
  * @param adj The adjacency list
  */
 void Markov_to_graph(t_adjacency_list* adj);
+
+typedef struct {
+    int id;
+    int num;
+    int lowlink;
+    int inStack;
+} t_tarjan_vertex;
+
+typedef struct {
+    char name[10];
+    t_tarjan_vertex **vertices;
+    int size;
+    int capacity;
+} t_class;
+
+typedef struct {
+    t_class **classes;
+    int size;
+    int capacity;
+} t_partition;
+
+t_tarjan_vertex *initTarjanVertices(int n);
+
+/**
+ * @param name The name of the class.
+ * @return A new class with the given name
+ */
+t_class *createClass(const char *name);
+
+/**
+ * @return A new partition
+ */
+t_partition *createPartition();
+
+typedef struct {
+    int *data;
+    int top;
+    int capacity;
+} t_stack;
+
+/**
+ * @brief Initialize the stack
+ * @param capacity The maximum number of elements the stack can hold
+ * @return A new stack
+ */
+t_stack *createStack(int capacity);
+
 #endif
