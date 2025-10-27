@@ -154,5 +154,9 @@ typedef struct {
  * @return A new stack
  */
 t_stack *createStack(int capacity);
-
+int isEmpty(t_stack *s);
+int pop(t_stack *s);
+void push(t_stack *s, int value);
+void freePartition(t_partition *p);
+void freeStack(t_stack *s);
 #endif

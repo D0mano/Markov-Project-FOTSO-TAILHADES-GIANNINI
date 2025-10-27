@@ -6,48 +6,63 @@
 
 
 int main() {
-    const char* filename = "../data/exemple1_chatGPT_fixed.txt";
+    printf("Les grandes étapes de ce qu'on a pour le moment ");
+    printf("--- stack test ---\n");
+    t_stack* stack = createStack(10);
+    printf("Pile vide ? (1=oui, 0=non): %d\n", isEmpty(stack));
+    printf("Push 5...\n");
+    push(stack, 5);
+    printf("Push 10...\n");
+    push(stack, 10);
+    printf("Pile vide ? (1=oui, 0=non): %d\n", isEmpty(stack));
+    printf("Pop: %d\n", pop(stack));
+    printf("Pop: %d\n", pop(stack));
+    printf("Pile vide ? (1=oui, 0=non): %d\n", isEmpty(stack));
+    freeStack(stack);
+    printf("stack working sir\n\n");
 
-    printf("--- Testing readGraph function with '%s' ---\n", filename);
+    printf("--- 2. Test Lecture Graphe ---\n");
+    t_adjacency_list* graph = readGraph("../data/exemple1_chatGPT_fixed.txt");
+    if (graph == NULL) {
+        printf("Erreur: bouffon check si c'est bien :  'graphe_4v.txt'.\n");
 
-    t_adjacency_list* graph = readGraph(filename);
-    Markov_to_graph(graph);
-
-    printf("\n--- Adjacency List read from file: ---\n");
+        return 1;
+    }
     displayAdjList(graph);
+
+    printf("--- 3. Markov matrix check  ---\n");
     isMarkov(graph);
+    printf("\n");
 
-    printf("\n--- Step 1 part2 test ---\n");
+    printf("--- 4. Test Mermaid ---\n");
+    Markov_to_graph(graph);
+    printf("Fichier '../graph.txt' generated \n\n");
 
-    int n = graph->size;
-    t_tarjan_vertex *vertices = initTarjanVertices(n);
-    printf("Vertices initialized:\n");
-    for (int i = 0; i < n; i++) {
-        printf("Vertex %d -> num=%d, lowlink=%d, inStack=%d\n",
-               vertices[i].id, vertices[i].num,
-               vertices[i].lowlink, vertices[i].inStack);
+    printf("--- 5. Test Initialisation Tarjan ---\n");
+    t_tarjan_vertex* tarjan_vertices = initTarjanVertices(graph->size);
+    printf("Tableau t_tarjan_vertex initialised pour %d sommets :\n", graph->size);
+
+    printf("Sommets = id= identification num,");
+    printf("num = C est le numero temporaire. Le PDF demande de linitialiser a -1. Le -1 signifie ce sommet n'a pas encore been visited par lalgo");
+    printf("lowlink= Cest le numero accessible. Le PDF demande de 'initialiser a -1. Le -1 signifie le numero accessible na pas encore been computed");
+    printf("inStack = Cest lindicateur boolean (0 pour faux). Le PDF demande de l'initialiser a 0. Le 0 signifie ce sommet nest pas actuellement dans la pile de traitement");
+
+    for (int i = 0; i < graph->size; i++) {
+        printf("  Sommet %d: id=%d, num=%d, lowlink=%d, inStack=%d\n",
+               i, tarjan_vertices[i].id, tarjan_vertices[i].num,
+               tarjan_vertices[i].lowlink, tarjan_vertices[i].inStack);
     }
 
-    t_stack *stack = createStack(n);
-    printf("Stack created (capacity=%d)\n", stack->capacity);
 
-    t_partition *partition = createPartition();
-    t_class *class1 = createClass("C1");
-    partition->classes[partition->size++] = class1;
+    printf("--- 6. Test Partition ---\n");
+    t_partition* partition = createPartition();
+    printf("Partition created. Taille: %d, Capacitad: %d\n", partition->size, partition->capacity);
 
-    class1->vertices[class1->size++] = &vertices[0];
-    printf(" class %s containing vertex %d\n", class1->name, class1->vertices[0]->id);
-
-    free(class1->vertices);
-    free(class1);
-    free(partition->classes);
-    free(partition);
-    free(stack->data);
-    free(stack);
-    free(vertices);
-
+    printf("--- 7. clean  ---\n");
+    free(tarjan_vertices);
+    freePartition(partition);
     freeAdjList(graph);
-    printf("Memory freed successfully.\n");
+    printf(" Tests finished. me faites pas chier\n");
 
-    return EXIT_SUCCESS;
+    return 0;
 }

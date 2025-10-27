@@ -260,6 +260,19 @@ t_stack *createStack(int capacity) {
     s->capacity = capacity;
     return s;
 }
+void freeStack(t_stack *s) {
+    if (s) {
+        free(s->data);
+        free(s);
+    }
+}
+
+void freePartition(t_partition *p) {
+    if (p) {
+        free(p->classes);
+        free(p);
+    }
+}
 
 void push(t_stack *s, int v) { s->data[++s->top] = v; }
 int pop(t_stack *s) { return s->data[s->top--]; }
