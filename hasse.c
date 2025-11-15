@@ -1,9 +1,10 @@
 #include <malloc.h>
-#include "hasse.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "hasse.h"
 #include "types.h"
+#include "utils.h"
 
 t_cell* createCell(int arrival_vertex, float prob) {
     t_cell* cell = (t_cell*) malloc(sizeof(t_cell));
@@ -166,37 +167,6 @@ void isMarkov(t_adjacency_list* adj) {
     printf("For each vertex, the sum of probabilities is 1\n");
 }
 
-char *getID(int num) {
-    if (num < 1) {
-        return NULL;
-    }
-
-    // Calculate the length needed for the result
-    int len = 0;
-    int temp = num;
-    while (temp > 0) {
-        len++;
-        temp = (temp - 1) / 26;
-    }
-
-    // Allocate memory for the result (+1 for null terminator)
-    char *result = (char *)malloc((len + 1) * sizeof(char));
-    if (result == NULL) {
-        return NULL;
-    }
-
-    // Fill the string from right to left
-    result[len] = '\0';
-    temp = num;
-
-    for (int i = len - 1; i >= 0; i--) {
-        temp--;
-        result[i] = 'A' + (temp % 26);
-        temp /= 26;
-    }
-
-    return result;
-}
 
 void Markov_to_graph(t_adjacency_list* adj) {
     FILE* graph;
@@ -227,21 +197,47 @@ void Markov_to_graph(t_adjacency_list* adj) {
 t_tarjan_vertex *initTarjanVertices(int n) {
     t_tarjan_vertex *vertices = malloc(n * sizeof(t_tarjan_vertex));
     for (int i = 0; i < n; i++) {
-        vertices[i].id = i;
+        vertices[i].id = i+1;
         vertices[i].num = -1;
         vertices[i].lowlink = -1;
         vertices[i].inStack = 0;
     }
     return vertices;
 }
+t_class_cell* createClassCell(t_tarjan_vertex vertex) {
+    t_class_cell* cell = (t_class_cell*) malloc(sizeof(t_class_cell));
+    cell->vertex = vertex;
+    cell->next = NULL;
+    return cell;
+}
+t_class_list createEmptyClassList() {
+    t_class_list list;
+    list.head = NULL;
+    return list;
+}
 
-t_class *createClass(const char *name) {
+t_class *createClass(const char *name){
     t_class *c = malloc(sizeof(t_class));
-    strcpy(c->name, name);
+    strcpy(c->name,name);
     c->size = 0;
-    c->capacity = 4;
-    c->vertices = malloc(c->capacity * sizeof(t_tarjan_vertex *));
+    c->vertices = createEmptyClassList();
     return c;
+}
+int isEmptyClassList(t_class_list list) {
+    return list.head == NULL;
+}
+
+void addClassCell(t_class_list* list,t_tarjan_vertex vertex){
+    t_class_cell* new_cell = createClassCell(vertex);
+    if (isEmptyClassList(*list)) {
+        list->head = new_cell;
+    }else {
+        t_class_cell* cur = list->head;
+        while (cur->next != NULL) {
+            cur = cur->next;
+        }
+        cur->next = new_cell;
+    }
 }
 
 t_partition *createPartition() {

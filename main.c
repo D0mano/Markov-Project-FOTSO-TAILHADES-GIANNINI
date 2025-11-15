@@ -42,27 +42,36 @@ int main() {
     t_tarjan_vertex* tarjan_vertices = initTarjanVertices(graph->size);
     printf("Tableau t_tarjan_vertex initialised pour %d sommets :\n", graph->size);
 
-    printf("Sommets = id= identification num,");
-    printf("num = C est le numero temporaire. Le PDF demande de linitialiser a -1. Le -1 signifie ce sommet n'a pas encore been visited par lalgo");
-    printf("lowlink= Cest le numero accessible. Le PDF demande de 'initialiser a -1. Le -1 signifie le numero accessible na pas encore been computed");
-    printf("inStack = Cest lindicateur boolean (0 pour faux). Le PDF demande de l'initialiser a 0. Le 0 signifie ce sommet nest pas actuellement dans la pile de traitement");
+    printf("Sommets = id = identification num,");
+    printf("num = C'est le numero temporaire. Le PDF demande de l'initialiser a -1.\nLe -1 signifie ce sommet n'a pas encore ete visiter par l'algo.\n");
+    printf("lowlink = C'est le numero accessible. Le PDF demande de 'initialiser a -1.\nLe -1 signifie le numero accessible n'a pas encore ete calculer\n");
+    printf("inStack = Cest l'indicateur boolean (0 pour faux). Le PDF demande de l'initialiser a 0.\nLe 0 signifie ce sommet n'est pas actuellement dans la pile de traitement\n");
 
     for (int i = 0; i < graph->size; i++) {
         printf("  Sommet %d: id=%d, num=%d, lowlink=%d, inStack=%d\n",
                i, tarjan_vertices[i].id, tarjan_vertices[i].num,
                tarjan_vertices[i].lowlink, tarjan_vertices[i].inStack);
     }
+    printf("--- 6. Test Class functions ---\n");
+    t_class* C1 = createClass("C1");
+    printf("Test: Is class %s empty: %d\n",C1->name,isEmptyClassList(C1->vertices));
+    printf("Test: Adding element in %s\n",C1->name);
+    addClassCell(&C1->vertices,tarjan_vertices[1]);
+    printf("Test: Is class %s empty: %d\n",C1->name,isEmptyClassList(C1->vertices));
 
 
-    printf("--- 6. Test Partition ---\n");
+
+    printf("--- 7. Test Partition ---\n");
     t_partition* partition = createPartition();
     printf("Partition created. Taille: %d, Capacitad: %d\n", partition->size, partition->capacity);
 
-    printf("--- 7. clean  ---\n");
+    printf("--- 8. clean  ---\n");
     free(tarjan_vertices);
     freePartition(partition);
     freeAdjList(graph);
     printf(" Tests finished. me faites pas chier\n");
+
+
 
     return 0;
 }

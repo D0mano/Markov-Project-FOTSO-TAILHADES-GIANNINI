@@ -100,7 +100,6 @@ void isMarkov(t_adjacency_list* adj);
  * @param num The number to be converted
  * @return The associated string character
  */
-char* getID(int num);
 
 
 /**
@@ -116,11 +115,19 @@ typedef struct {
     int inStack;
 } t_tarjan_vertex;
 
+typedef struct s_class_cell {
+    struct s_class_cell *next;
+    t_tarjan_vertex vertex;
+}t_class_cell;
+
+typedef struct s_class_list {
+    t_class_cell* head;
+}t_class_list;
+
 typedef struct {
     char name[10];
-    t_tarjan_vertex **vertices;
+    t_class_list vertices;
     int size;
-    int capacity;
 } t_class;
 
 typedef struct {
@@ -147,6 +154,11 @@ typedef struct {
     int top;
     int capacity;
 } t_stack;
+t_class_cell* createClassCell(t_tarjan_vertex vertex);
+t_class_list createEmptyClassList();
+int isEmptyClassList(t_class_list list);
+void addClassCell(t_class_list* list,t_tarjan_vertex vertex);
+
 
 /**
  * @brief Initialize the stack
@@ -159,4 +171,8 @@ int pop(t_stack *s);
 void push(t_stack *s, int value);
 void freePartition(t_partition *p);
 void freeStack(t_stack *s);
+
+
+
+void parcours(t_list edge,t_stack *stack,t_tarjan_vertex* vertice,t_partition* partition,int id,int num);
 #endif
