@@ -167,7 +167,6 @@ void isMarkov(t_adjacency_list* adj) {
     printf("For each vertex, the sum of probabilities is 1\n");
 }
 
-
 void Markov_to_graph(t_adjacency_list* adj) {
     FILE* graph;
     graph = fopen("../graph.txt", "w");
@@ -227,8 +226,9 @@ t_class *createClass(const char *name){
 int isEmptyClassList(t_class_list list) {
     return list.head == NULL;
 }
-void addClassCell(t_class_list* list,t_tarjan_vertex vertex){
+void addClassCell(t_class* class,t_tarjan_vertex vertex){
     t_class_cell* new_cell = createClassCell(vertex);
+    t_class_list *list = &class->vertices;
     if (isEmptyClassList(*list)) {
         list->head = new_cell;
     }else {
@@ -238,6 +238,7 @@ void addClassCell(t_class_list* list,t_tarjan_vertex vertex){
         }
         cur->next = new_cell;
     }
+    class->size++;
 }
 
 //PARTITION
@@ -261,8 +262,9 @@ t_partition *createPartition() {
 int isEmptyPartitionList(t_partition_list list) {
     return list.head == NULL;
 }
-void addPartitionCell(t_partition_list* list,t_class class) {
+void addPartitionCell(t_partition* p,t_class class) {
     t_partition_cell* new_cell = createPartitionCell(class);
+    t_partition_list* list = &p->classes;
     if (isEmptyPartitionList(*list)) {
         list->head = new_cell;
     } else {
@@ -272,6 +274,7 @@ void addPartitionCell(t_partition_list* list,t_class class) {
         }
         cur->next = new_cell;
     }
+
 }
 
 
@@ -304,7 +307,55 @@ void push(t_stack *s, int v) { s->data[++s->top] = v; }
 int pop(t_stack *s) { return s->data[s->top--]; }
 int isEmpty(t_stack *s) { return s->top == -1; }
 
+void parcours(int v, int num, t_partition *p, t_stack *s, t_adjacency_list graph, t_tarjan_vertex *vertices) {
+    t_tarjan_vertex* vertex = &vertices[v];
+    vertex->num = num;
+    vertex->lowlink = num;
+    num = num + 1;
+    push(s, v);
+    vertex->inStack = 1;
+    p_cell curr = graph.tab[v].head;
 
+    while (curr != NULL) {
+        int w = curr->arrival_vertex;
+        if (vertices[w].num == -1) {
+            parcours(w, num, p, s, graph, vertices);
+            if (vertex->lowlink > vertices[w].lowlink) {
+                vertex->lowlink = vertices[w].lowlink;
+            }
+        } else if (vertices[w].inStack == 1) {
+            if (vertex->lowlink > vertices[w].num) {
+                vertex->lowlink = vertices[w].num;
+            }
+        }
+        curr = curr->next;
+    }
+
+    if (vertex->lowlink > vertex->num) {
+        char str[3];
+        sprintf(str, "C%d", p->size+1);
+        t_class *class = createClass(str);
+        int w = pop(s);
+        vertices[w].inStack = 0;
+        do {
+            w = pop(s);
+            vertices[w].inStack = 0;
+            addClassCell(class, vertices[w]);
+        } while (w != v);
+    }
+}
+
+t_partition tarjan(t_adjacency_list graph, t_tarjan_vertex *vertices) {
+    t_partition *p = createPartition();
+    t_stack *s = createStack(graph.size);
+    int num = 0;
+    for (int v = 0; v < graph.size; v++) {
+        if (vertices[v].num == -1) {
+            parcours(v, num, p, s, graph, vertices);
+        }
+    }
+    return *p;
+}
 
 
 

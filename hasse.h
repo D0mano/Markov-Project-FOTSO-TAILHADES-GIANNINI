@@ -152,11 +152,6 @@ t_tarjan_vertex *initTarjanVertices(int n);
  */
 t_class *createClass(const char *name);
 
-/**
- * @return A new partition
- */
-t_partition *createPartition();
-
 typedef struct {
     int *data;
     int top;
@@ -166,7 +161,17 @@ typedef struct {
 t_class_cell* createClassCell(t_tarjan_vertex vertex);
 t_class_list createEmptyClassList();
 int isEmptyClassList(t_class_list list);
-void addClassCell(t_class_list* list,t_tarjan_vertex vertex);
+void addClassCell(t_class* class,t_tarjan_vertex vertex);
+
+/**
+ * @return A new partition
+ */
+t_partition *createPartition();
+
+t_partition_cell* createPartitionCell(t_class class);
+t_partition_list createEmptyPartitionList();
+void addPartitionCell(t_partition* p,t_class class);
+int isEmptyPartitionList(t_partition_list list);
 
 
 /**
@@ -182,6 +187,15 @@ void freePartition(t_partition *p);
 void freeStack(t_stack *s);
 
 
-
-void parcours(t_list edge,t_stack *stack,t_tarjan_vertex* vertice,t_partition* partition,int id,int num);
+/**
+ * @brief go through the graph
+ * @param v id of the edge of our graph
+ * @param num temporary number, marks the order in which nodes are visited during DFS
+ * @param p is an empty partition
+ * @param s is an empty stack
+ * @param graph is a graph
+ */
+void parcours(int v, int num, t_partition *p, t_stack *s, t_adjacency_list graph, t_tarjan_vertex *vertices);
 #endif
+
+t_partition tarjan(t_adjacency_list graph, t_tarjan_vertex *vertices);

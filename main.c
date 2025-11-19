@@ -22,9 +22,9 @@ int main() {
     printf("stack working sir\n\n");
 
     printf("--- 2. Test Lecture Graphe ---\n");
-    t_adjacency_list* graph = readGraph("../data/exemple1_chatGPT_fixed.txt");
+    t_adjacency_list* graph = readGraph("../data/exemple1.txt");
     if (graph == NULL) {
-        printf("Erreur: bouffon check si c'est bien :  'graphe_4v.txt'.\n");
+        printf("Erreur: check si c'est bien :  'graphe_4v.txt'.\n");
 
         return 1;
     }
@@ -56,14 +56,21 @@ int main() {
     t_class* C1 = createClass("C1");
     printf("Test: Is class %s empty: %d\n",C1->name,isEmptyClassList(C1->vertices));
     printf("Test: Adding element in %s\n",C1->name);
-    addClassCell(&C1->vertices,tarjan_vertices[1]);
+    addClassCell(C1,tarjan_vertices[1]);
     printf("Test: Is class %s empty: %d\n",C1->name,isEmptyClassList(C1->vertices));
-
 
 
     printf("--- 7. Test Partition ---\n");
     t_partition* partition = createPartition();
     printf("Partition created. Taille: %d\n", partition->size);
+
+    t_partition p = tarjan(*graph, tarjan_vertices);
+    t_partition_cell * curr = p.classes.head;
+    printf("%d\n", p.size);
+    while (curr != NULL) {
+        printf("%s", curr->class.name);
+        curr=curr->next;
+    }
 
     printf("--- 8. clean  ---\n");
     free(tarjan_vertices);
