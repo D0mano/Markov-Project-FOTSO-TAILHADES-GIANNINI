@@ -204,6 +204,8 @@ t_tarjan_vertex *initTarjanVertices(int n) {
     }
     return vertices;
 }
+
+//CLASS
 t_class_cell* createClassCell(t_tarjan_vertex vertex) {
     t_class_cell* cell = (t_class_cell*) malloc(sizeof(t_class_cell));
     cell->vertex = vertex;
@@ -215,7 +217,6 @@ t_class_list createEmptyClassList() {
     list.head = NULL;
     return list;
 }
-
 t_class *createClass(const char *name){
     t_class *c = malloc(sizeof(t_class));
     strcpy(c->name,name);
@@ -226,7 +227,6 @@ t_class *createClass(const char *name){
 int isEmptyClassList(t_class_list list) {
     return list.head == NULL;
 }
-
 void addClassCell(t_class_list* list,t_tarjan_vertex vertex){
     t_class_cell* new_cell = createClassCell(vertex);
     if (isEmptyClassList(*list)) {
@@ -240,12 +240,38 @@ void addClassCell(t_class_list* list,t_tarjan_vertex vertex){
     }
 }
 
+//PARTITION
+t_partition_cell* createPartitionCell(t_class class) {
+    t_partition_cell* new_cell = (t_partition_cell*) malloc(sizeof(t_partition_cell));
+    new_cell->class = class;
+    new_cell->next = NULL;
+    return new_cell;
+}
+t_partition_list createEmptyPartitionList() {
+    t_partition_list list;
+    list.head = NULL;
+    return list;
+}
 t_partition *createPartition() {
     t_partition *p = malloc(sizeof(t_partition));
     p->size = 0;
-    p->capacity = 4;
-    p->classes = malloc(p->capacity * sizeof(t_class *));
+    p->classes = createEmptyPartitionList();
     return p;
+}
+int isEmptyPartitionList(t_partition_list list) {
+    return list.head == NULL;
+}
+void addPartitionCell(t_partition_list* list,t_class class) {
+    t_partition_cell* new_cell = createPartitionCell(class);
+    if (isEmptyPartitionList(*list)) {
+        list->head = new_cell;
+    } else {
+        t_partition_cell* cur = list->head;
+        while (cur->next != NULL) {
+            cur = cur->next;
+        }
+        cur->next = new_cell;
+    }
 }
 
 
@@ -265,8 +291,12 @@ void freeStack(t_stack *s) {
 
 void freePartition(t_partition *p) {
     if (p) {
-        free(p->classes);
-        free(p);
+        t_partition_cell * curr = p->classes.head;
+        while (curr != NULL) {
+            t_partition_cell * next = curr->next;
+            free(curr);
+            curr = next;
+        }
     }
 }
 

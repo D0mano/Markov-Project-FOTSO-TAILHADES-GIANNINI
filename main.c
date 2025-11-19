@@ -63,13 +63,13 @@ int main() {
 
     printf("--- 7. Test Partition ---\n");
     t_partition* partition = createPartition();
-    printf("Partition created. Taille: %d, Capacitad: %d\n", partition->size, partition->capacity);
+    printf("Partition created. Taille: %d\n", partition->size);
 
     printf("--- 8. clean  ---\n");
     free(tarjan_vertices);
     freePartition(partition);
     freeAdjList(graph);
-    printf(" Tests finished. me faites pas chier\n");
+    printf(" Tests finished.\n");
 
 
 

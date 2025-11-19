@@ -130,10 +130,18 @@ typedef struct {
     int size;
 } t_class;
 
+typedef struct s_partition_cell {
+    struct s_partition_cell *next;
+    t_class class;
+} t_partition_cell;
+
+typedef struct s_partition_list {
+    struct s_partition_cell *head;
+} t_partition_list;
+
 typedef struct {
-    t_class **classes;
+    t_partition_list classes;
     int size;
-    int capacity;
 } t_partition;
 
 t_tarjan_vertex *initTarjanVertices(int n);
@@ -154,6 +162,7 @@ typedef struct {
     int top;
     int capacity;
 } t_stack;
+
 t_class_cell* createClassCell(t_tarjan_vertex vertex);
 t_class_list createEmptyClassList();
 int isEmptyClassList(t_class_list list);
