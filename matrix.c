@@ -103,7 +103,7 @@ void displayMatrix(t_matrix matrix) {
     for (int i = 0; i < matrix.rows; i++) {
         printf("[ ");
         for (int j = 0; j < matrix.cols; j++) {
-            printf("%.4f ", matrix.data[i][j]);
+            printf("%.2f ", matrix.data[i][j]);
         }
         printf("]\n");
     }
@@ -146,4 +146,45 @@ t_matrix matrixPower(t_matrix matrix, int n) {
 
     freeMatrix(temp);
     return result;
+}
+
+t_matrix subMatrix(t_matrix matrix, t_partition part, int compo_index) {
+    t_partition_list partition_list = part.classes;
+    t_partition_cell *curr = partition_list.head;
+    for (int i = 0; i < compo_index; i++) {
+        curr = curr->next;
+    }
+    t_class class = curr->class;
+    int* class_arr = LinkedClass_to_Arrays(class);
+    int n = class.size;
+    t_matrix result = createEmptyMatrix(n);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            result.data[i][j] = matrix.data[class_arr[i]-1][class_arr[j]-1];
+
+        }
+    }
+    return result;
+
+}
+
+t_matrix stationaryDistribution(t_matrix matrix) {
+    t_matrix Mn_prev = createEmptyMatrix(matrix.rows);
+    t_matrix Mn = createEmptyMatrix(matrix.rows);
+    copyMatrix(Mn, matrix);
+
+    int n = 1;
+    float epsilon = 0.01f;
+    float difference;
+    do {
+        n++;
+        copyMatrix(Mn_prev, Mn);
+        t_matrix temp = matrixPower(matrix, n);
+        copyMatrix(Mn, temp);
+        freeMatrix(temp);
+
+        difference = diff(Mn, Mn_prev);
+        //printf("n=%d, diff=%.6f\n", n, difference);
+    } while (difference > epsilon && n < 1000);
+    return Mn;
 }

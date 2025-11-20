@@ -70,4 +70,20 @@ void freeMatrix(t_matrix matrix);
  */
 t_matrix matrixPower(t_matrix matrix, int n);
 
+/**
+* @brief Extracts a submatrix corresponding to a specific component of a graph partition.
+* @param matrix The original adjacency matrix of the graph.
+* @param part The partition of the graph into strongly connected components.
+* @param compo_index The index of the component to extract.
+* @return t_matrix The submatrix corresponding to the specified component.
+*/
+t_matrix subMatrix(t_matrix matrix, t_partition part, int compo_index);
+
+/**
+ * @brief Compute the stationary distribution of a Matrix by computing her power untils the difference is less than 0.01
+ * @param matrix The matrix use to compute the stationary distribution
+ * @return The stationary distribution of the matrix
+ */
+t_matrix stationaryDistribution(t_matrix matrix);
+
 #endif

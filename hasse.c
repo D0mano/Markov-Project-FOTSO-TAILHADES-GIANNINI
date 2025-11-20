@@ -486,6 +486,20 @@ void displayLinksArray(t_link_array p_link_array, t_partition partition) {
     printf("]\n");
 }
 
+int * LinkedClass_to_Arrays(t_class class) {
+    t_class_list list = class.vertices;
+    int* array = (int*)malloc(class.size*sizeof(int));
+    t_class_cell* curr = list.head;
+    int index = 0;
+    while (curr != NULL) {
+        array[index] = curr->vertex.id;
+        curr = curr->next;
+        index++;
+    }
+    return array;
+}
+
+
 
 int isValInArray(int* arr, int val, int size) {
     for (int i=0; i < size; i++) {

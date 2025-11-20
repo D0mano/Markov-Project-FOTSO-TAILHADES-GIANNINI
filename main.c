@@ -75,11 +75,7 @@ int main() {
     printf("]\n");
 
     // Cleanup
-    freeMatrix(M);
-    freeMatrix(M3);
-    freeMatrix(M7);
-    freeMatrix(Mn);
-    freeMatrix(Mn_prev);
+
     displayAdjList(graph);
 
     printf("--- 3. Markov matrix check  ---\n");
@@ -128,8 +124,27 @@ int main() {
 
     getCharacteristics(links, p);
 
-    printf("--- 10. clean  ---\n");
+    printf("--- 10. Test Submatrix Creation ---\n");
+    t_partition_list list_p = p.classes;
+    t_partition_cell *curr = list_p.head;
+    int index = 0;
+    while (curr != NULL) {
+        printf("Submatrix for the class : %s\n",curr->class.name);
+        t_matrix temp = subMatrix(M,p,index);
+        displayMatrix(temp);
+        printf("Stationary distribution for the class : %s\n",curr->class.name);
+        displayMatrix(stationaryDistribution(temp));
+        curr = curr->next;
+        index++;
+    }
 
+
+    printf("--- 10. clean  ---\n");
+    freeMatrix(M);
+    freeMatrix(M3);
+    freeMatrix(M7);
+    freeMatrix(Mn);
+    freeMatrix(Mn_prev);
     free(tarjan_vertices);
     freePartition(&p);
     freeAdjList(graph);

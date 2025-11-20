@@ -155,4 +155,11 @@ void removeTransitiveLinks(t_link_array *p_link_array);
 t_class getClassFromVertex(t_tarjan_vertex vertex, t_partition partition);
 void makeLinks(t_link_array *p_link_array, t_tarjan_vertex *vertices, t_adjacency_list graph, t_partition partition);
 
+/**
+ * @brief Convert a class linked list into an array of integers
+ * @param class a class of a graph
+ * @return an array of integers
+ */
+int * LinkedClass_to_Arrays(t_class class);
+
 void getCharacteristics(t_link_array links, t_partition partition);
