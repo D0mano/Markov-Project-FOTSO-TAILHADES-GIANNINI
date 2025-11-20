@@ -99,7 +99,7 @@ int main() {
     printf("lowlink = C'est le numero accessible. Le PDF demande de 'initialiser a -1.\nLe -1 signifie le numero accessible n'a pas encore ete calculer\n");
     printf("inStack = Cest l'indicateur boolean (0 pour faux). Le PDF demande de l'initialiser a 0.\nLe 0 signifie ce sommet n'est pas actuellement dans la pile de traitement\n");
 
-    for (int i = 0; i <= graph->size; i++) {
+    for (int i = 0; i < graph->size; i++) {
         printf("  Sommet %d: id=%d, num=%d, lowlink=%d, inStack=%d\n",
                i, tarjan_vertices[i].id, tarjan_vertices[i].num,
                tarjan_vertices[i].lowlink, tarjan_vertices[i].inStack);
@@ -124,8 +124,10 @@ int main() {
     displayLinksArray(links, p);
 
 
+    printf("--- 9. Characteristics ---\n");
+    getCharacteristics(links, p);
 
-    printf("--- 9. clean  ---\n");
+    printf("--- 10. clean  ---\n");
     free(tarjan_vertices);
     freePartition(&p);
     freeAdjList(graph);

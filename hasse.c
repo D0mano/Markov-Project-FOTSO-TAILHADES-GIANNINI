@@ -485,3 +485,78 @@ void displayLinksArray(t_link_array p_link_array, t_partition partition) {
     printf(")");
     printf("]\n");
 }
+
+
+int isValInArray(int* arr, int val, int size) {
+    for (int i=0; i < size; i++) {
+        if (arr[i] == val) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void getCharacteristics(t_link_array links, t_partition partition) {
+    printf("The Markov graph is%sirreducible\n", (partition.size == 1) ? " " : " not ");
+    int* transient = malloc(partition.size*sizeof(int));
+    t_stack* persistent = createStack(partition.size);
+    int j = 0;
+
+    if (links.log_size != 0) {
+        for (int i=0; i < links.log_size; i++) {
+            if (isValInArray(transient, links.links[i].from, partition.size) == 0) {
+                transient[j] = links.links[i].from;
+                j++;
+            }
+        }
+        for (int i=0; i < partition.size; i++) {
+            if (isValInArray(transient, i, j) == 0) {
+                push(persistent, i);
+            }
+        }
+    } else {
+        for (int i=0; i < partition.size; i++) {
+            push(persistent, i);
+        }
+    }
+
+    for (int i=0; i < j; i++) {
+        t_class c = getClassFromIndex(transient[i], partition);
+        printf("The class ");
+        displayClass(c);
+        printf(" is transient - ");
+        printf("state%s", (c.size == 1) ? " " : "s ");
+        t_class_cell* curr = c.vertices.head;
+        printf("%d", c.vertices.head->vertex.id);
+        while (curr->next != NULL) {
+            printf(", %d", curr->vertex.id);
+            curr = curr->next;
+        }
+        if (c.size != 1) {
+            printf(" and %d", curr->vertex.id);
+        }
+        printf("%s transient.\n", (c.size == 1) ? " is " : " are ");
+
+    }
+    while (isEmpty(persistent) == 0) {
+        t_class c = getClassFromIndex(pop(persistent), partition);
+        printf("The class");
+        displayClass(c);
+        printf(" is persistent - ");
+        printf("state%s", (c.size == 1) ? " " : "s ");
+        t_class_cell* curr = c.vertices.head;
+        printf("%d", c.vertices.head->vertex.id);
+        while (curr->next != NULL) {
+            printf(", %d", curr->vertex.id);
+            curr = curr->next;
+        }
+        if (c.size != 1) {
+            printf(" and %d", curr->vertex.id);
+        }
+        if (c.size == 1) {
+            printf(" is persistent and absorbing.");
+        } else {
+            printf(" are persistent.\n");
+        }
+    }
+}

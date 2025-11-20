@@ -154,3 +154,5 @@ void displayLinksArray(t_link_array p_link_array, t_partition partition);
 void removeTransitiveLinks(t_link_array *p_link_array);
 t_class getClassFromVertex(t_tarjan_vertex vertex, t_partition partition);
 void makeLinks(t_link_array *p_link_array, t_tarjan_vertex *vertices, t_adjacency_list graph, t_partition partition);
+
+void getCharacteristics(t_link_array links, t_partition partition);
