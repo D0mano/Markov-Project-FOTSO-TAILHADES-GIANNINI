@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hasse.h"
+#include "matrix.h"
 
 
 
@@ -21,13 +22,64 @@ int main() {
     freeStack(stack);
     printf("stack working sir\n\n");
 
-    printf("--- 2. Test Lecture Graphe ---\n");
-    t_adjacency_list* graph = readGraph("../data/exemple2.txt");
+    printf("--- 1. Test Lecture Graphe ---\n");
+    t_adjacency_list* graph = readGraph("../data/exemple_meteo.txt");
     if (graph == NULL) {
         printf("Erreur: check si c'est bien :  'graphe_4v.txt'.\n");
 
         return 1;
     }
+    printf("\n--- 2. Matrix Operations Test ---\n");
+
+    // Create transition matrix from graph
+    t_matrix M = createTransitionMatrix(graph);
+    printf("Transition matrix M:\n");
+    displayMatrix(M);
+
+    // Calculate M^3
+    printf("Calculating M^3:\n");
+    t_matrix M3 = matrixPower(M, 3);
+    displayMatrix(M3);
+
+    // Calculate M^7
+    printf("Calculating M^7:\n");
+    t_matrix M7 = matrixPower(M, 7);
+    displayMatrix(M7);
+
+    // Find convergence
+    printf("Finding convergence (epsilon = 0.01):\n");
+    t_matrix Mn_prev = createEmptyMatrix(M.rows);
+    t_matrix Mn = createEmptyMatrix(M.rows);
+    copyMatrix(Mn, M);
+
+    int n = 1;
+    float epsilon = 0.01f;
+    float difference;
+
+    do {
+        n++;
+        copyMatrix(Mn_prev, Mn);
+        t_matrix temp = matrixPower(M, n);
+        copyMatrix(Mn, temp);
+        freeMatrix(temp);
+
+        difference = diff(Mn, Mn_prev);
+        printf("n=%d, diff=%.6f\n", n, difference);
+    } while (difference > epsilon && n < 1000);
+
+    printf("\nConvergence reached at n=%d with diff=%.6f\n", n, difference);
+    printf("Stationary distribution (row 1 of M^%d):\n[ ", n);
+    for (int j = 0; j < Mn.cols; j++) {
+        printf("%.4f ", Mn.data[0][j]);
+    }
+    printf("]\n");
+
+    // Cleanup
+    freeMatrix(M);
+    freeMatrix(M3);
+    freeMatrix(M7);
+    freeMatrix(Mn);
+    freeMatrix(Mn_prev);
     displayAdjList(graph);
 
     printf("--- 3. Markov matrix check  ---\n");
