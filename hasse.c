@@ -370,10 +370,118 @@ t_partition tarjan(t_adjacency_list* graph, t_tarjan_vertex *vertices) {
     t_partition *p = createPartition();
     t_stack *s = createStack(graph->size);
     int num = 0;
-    for (int v = 0; v <= graph->size; v++) {
+    for (int v = 0; v < graph->size; v++) {
         if (vertices[v].num == -1) {
             parcours(v, &num, p, s, graph, vertices);
         }
     }
     return *p;
+}
+
+t_class getClassFromVertex(t_tarjan_vertex vertex, t_partition partition) {
+    t_partition_cell* curr_c = partition.classes.head;
+    while (curr_c != NULL) {
+        t_class_cell* curr_v = curr_c->class.vertices.head;
+        while (curr_v != NULL) {
+            if (curr_v->vertex.id == vertex.id) {
+                return curr_c->class;
+            }
+            curr_v = curr_v->next;
+        }
+        curr_c = curr_c->next;
+    }
+}
+
+int compareTwoClasses(t_class C1, t_class C2) {
+    t_class_cell* curr_c1 = C1.vertices.head;
+    t_class_cell* curr_c2 = C2.vertices.head;
+    while (curr_c1 != NULL && curr_c2 != NULL) {
+        if (curr_c1->vertex.id != curr_c2->vertex.id) {
+            return 0;
+        }
+        curr_c1 = curr_c1->next;
+        curr_c2 = curr_c2->next;
+    }
+    return 1;
+}
+
+int getClassIndex(t_class class, t_partition partition) {
+    t_partition_cell * curr = partition.classes.head;
+    int i = 0;
+    while (curr != NULL) {
+       if (compareTwoClasses(class, curr->class) == 1) {
+           return i;
+       }
+        curr = curr->next;
+        i++;
+    }
+    return -1;
+}
+t_class getClassFromIndex(int index, t_partition partition) {
+    int i = 0;
+    t_partition_cell* curr = partition.classes.head;
+    while (curr != NULL && i < index) {
+        curr = curr->next;
+        i++;
+    }
+    return curr->class;
+}
+
+t_link_array createEmptyLinkArray(int capacity) {
+    t_link_array p_link_array;
+    p_link_array.log_size = 0;
+    p_link_array.links = malloc(sizeof(t_link) * capacity);
+    return p_link_array;
+}
+int doesLinkExist(t_link_array p_link_array, int p1, int p2) {
+    for (int i=0; i < p_link_array.log_size; i++) {
+        if (p_link_array.links[i].from == p1 && p_link_array.links[i].to == p2) {
+            return 1;
+        }
+    }
+    return 0;
+}
+void addLink(t_link_array * p_link_array, t_link link) {
+    p_link_array->log_size++;
+    p_link_array->links[p_link_array->log_size-1] = link;
+}
+void makeLinks(t_link_array *p_link_array, t_tarjan_vertex *vertices, t_adjacency_list graph, t_partition partition) {
+    for (int i=1; i <= graph.size; i++) {
+        t_class Ci = getClassFromVertex(vertices[i-1], partition);
+        p_cell curr = graph.tab[i-1].head;
+        while (curr != NULL) {
+            t_class Cj = getClassFromVertex(vertices[curr->arrival_vertex-1], partition);
+            if (compareTwoClasses(Ci, Cj) == 0) {
+                int Ci_index = getClassIndex(Ci, partition);
+                int Cj_index = getClassIndex(Cj, partition);
+                if (doesLinkExist(*p_link_array, Ci_index, Cj_index) == 0) {
+                    t_link link;
+                    link.from = Ci_index;
+                    link.to = Cj_index;
+                    addLink(p_link_array, link);
+                }
+            }
+            curr = curr->next;
+        }
+    }
+}
+void displayLinksArray(t_link_array p_link_array, t_partition partition) {
+    printf("[");
+    if (p_link_array.log_size == 0) {
+        printf("]\n");
+        return;
+    }
+    for (int i=0; i < p_link_array.log_size-1; i++) {
+        printf("(");
+        displayClass(getClassFromIndex(p_link_array.links[i].from, partition));
+        printf(" -> ");
+        displayClass(getClassFromIndex(p_link_array.links[i].to, partition));
+        printf("),");
+    }
+    printf("(");
+    displayClass(getClassFromIndex(p_link_array.links[p_link_array.log_size-1].from, partition));
+    printf(" -> ");
+    displayClass(getClassFromIndex(p_link_array.links[p_link_array.log_size-1].to, partition));
+    printf(")");
+    printf("]\n");
 }

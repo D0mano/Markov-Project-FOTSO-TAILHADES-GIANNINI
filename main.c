@@ -22,7 +22,7 @@ int main() {
     printf("stack working sir\n\n");
 
     printf("--- 2. Test Lecture Graphe ---\n");
-    t_adjacency_list* graph = readGraph("../data/exemple3.txt");
+    t_adjacency_list* graph = readGraph("../data/exemple2.txt");
     if (graph == NULL) {
         printf("Erreur: check si c'est bien :  'graphe_4v.txt'.\n");
 
@@ -61,15 +61,21 @@ int main() {
 
 
     printf("--- 7. Test Partition ---\n");
-    t_partition* partition = createPartition();
-    printf("Partition created. Taille: %d\n", partition->size);
-
     t_partition p = tarjan(graph, tarjan_vertices);
     displayPartition(p);
+    printf("Partition created. Taille: %d\n", p.size);
 
-    printf("--- 8. clean  ---\n");
+    printf("--- 8. Test Links ---\n");
+    t_link_array links = createEmptyLinkArray(graph->size);
+    makeLinks(&links, tarjan_vertices, *graph, p);
+    printf("Links : ");
+    displayLinksArray(links, p);
+
+
+
+    printf("--- 9. clean  ---\n");
     free(tarjan_vertices);
-    freePartition(partition);
+    freePartition(&p);
     freeAdjList(graph);
     printf(" Tests finished.\n");
 

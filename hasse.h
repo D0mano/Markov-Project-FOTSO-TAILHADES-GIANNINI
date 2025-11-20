@@ -2,25 +2,6 @@
 #define __HASSE_H__
 #include "types.h"
 
-
-typedef struct s_cell{
-    struct s_cell* arrival;
-    struct s_cell* next;
-    int arrival_vertex;
-    float probability;
-} t_cell;
-
-typedef t_cell* p_cell;
-
-typedef struct s_list {
-    t_cell* head;
-}t_list;
-
-typedef struct s_adjacency_list {
-    int size;
-    t_list* tab;
-} t_adjacency_list;
-
 /**
  * @brief Create a cell with the value
  * @param vertice An int representing the vertice
@@ -69,9 +50,6 @@ t_adjacency_list* createAdjList(int nb_vertices);
  */
 void displayAdjList(t_adjacency_list* adj);
 
-
-void removeTransitiveLinks(t_link_array *p_link_array);
-
 /**
  * @brief Read a graph from a file and return the adjacency list representation.
  *
@@ -108,42 +86,6 @@ void isMarkov(t_adjacency_list* adj);
  */
 void Markov_to_graph(t_adjacency_list* adj);
 
-typedef struct {
-    int id;
-    int num;
-    int lowlink;
-    int inStack;
-} t_tarjan_vertex;
-
-typedef struct s_class_cell {
-    struct s_class_cell *next;
-    t_tarjan_vertex vertex;
-}t_class_cell;
-
-typedef struct s_class_list {
-    t_class_cell* head;
-}t_class_list;
-
-typedef struct {
-    char name[10];
-    t_class_list vertices;
-    int size;
-} t_class;
-
-typedef struct s_partition_cell {
-    struct s_partition_cell *next;
-    t_class class;
-} t_partition_cell;
-
-typedef struct s_partition_list {
-    struct s_partition_cell *head;
-} t_partition_list;
-
-typedef struct {
-    t_partition_list classes;
-    int size;
-} t_partition;
-
 t_tarjan_vertex *initTarjanVertices(int n);
 
 /**
@@ -163,6 +105,8 @@ t_class_list createEmptyClassList();
 int isEmptyClassList(t_class_list list);
 void addClassCell(t_class* class,t_tarjan_vertex vertex);
 void displayClass(t_class class);
+int compareTwoClasses(t_class C1, t_class C2);
+int getClassIndex(t_class class, t_partition partition);
 
 /**
  * @return A new partition
@@ -202,3 +146,11 @@ void parcours(int v, int *num, t_partition *p, t_stack *s, t_adjacency_list* gra
 #endif
 
 t_partition tarjan(t_adjacency_list* graph, t_tarjan_vertex *vertices);
+
+t_link_array createEmptyLinkArray(int capacity);
+int doesLinkExist(t_link_array p_link_array, int p1, int p2);
+void addLink(t_link_array * p_link_array, t_link link);
+void displayLinksArray(t_link_array p_link_array, t_partition partition);
+void removeTransitiveLinks(t_link_array *p_link_array);
+t_class getClassFromVertex(t_tarjan_vertex vertex, t_partition partition);
+void makeLinks(t_link_array *p_link_array, t_tarjan_vertex *vertices, t_adjacency_list graph, t_partition partition);
