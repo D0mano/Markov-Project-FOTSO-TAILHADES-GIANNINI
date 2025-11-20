@@ -371,8 +371,6 @@ t_partition tarjan(t_adjacency_list* graph, t_tarjan_vertex *vertices) {
     t_stack *s = createStack(graph->size);
     int num = 0;
     for (int v = 0; v <= graph->size; v++) {
-        printf("v = %d\n", v);
-        printf("num = %d\n", vertices[0].num);
         if (vertices[v].num == -1) {
             parcours(v, &num, p, s, graph, vertices);
         }
