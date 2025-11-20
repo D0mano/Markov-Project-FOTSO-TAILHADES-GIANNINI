@@ -125,12 +125,15 @@ int main() {
 
 
     printf("--- 9. Characteristics ---\n");
+
     getCharacteristics(links, p);
 
     printf("--- 10. clean  ---\n");
+
     free(tarjan_vertices);
     freePartition(&p);
     freeAdjList(graph);
+
     printf(" Tests finished.\n");
 
     return 0;
