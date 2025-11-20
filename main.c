@@ -22,7 +22,7 @@ int main() {
     printf("stack working sir\n\n");
 
     printf("--- 2. Test Lecture Graphe ---\n");
-    t_adjacency_list* graph = readGraph("../data/exemple1.txt");
+    t_adjacency_list* graph = readGraph("../data/exemple3.txt");
     if (graph == NULL) {
         printf("Erreur: check si c'est bien :  'graphe_4v.txt'.\n");
 
@@ -47,7 +47,7 @@ int main() {
     printf("lowlink = C'est le numero accessible. Le PDF demande de 'initialiser a -1.\nLe -1 signifie le numero accessible n'a pas encore ete calculer\n");
     printf("inStack = Cest l'indicateur boolean (0 pour faux). Le PDF demande de l'initialiser a 0.\nLe 0 signifie ce sommet n'est pas actuellement dans la pile de traitement\n");
 
-    for (int i = 0; i < graph->size; i++) {
+    for (int i = 0; i <= graph->size; i++) {
         printf("  Sommet %d: id=%d, num=%d, lowlink=%d, inStack=%d\n",
                i, tarjan_vertices[i].id, tarjan_vertices[i].num,
                tarjan_vertices[i].lowlink, tarjan_vertices[i].inStack);
@@ -64,21 +64,14 @@ int main() {
     t_partition* partition = createPartition();
     printf("Partition created. Taille: %d\n", partition->size);
 
-    t_partition p = tarjan(*graph, tarjan_vertices);
-    t_partition_cell * curr = p.classes.head;
-    printf("%d\n", p.size);
-    while (curr != NULL) {
-        printf("%s", curr->class.name);
-        curr=curr->next;
-    }
+    t_partition p = tarjan(graph, tarjan_vertices);
+    displayPartition(p);
 
     printf("--- 8. clean  ---\n");
     free(tarjan_vertices);
     freePartition(partition);
     freeAdjList(graph);
     printf(" Tests finished.\n");
-
-
 
     return 0;
 }
