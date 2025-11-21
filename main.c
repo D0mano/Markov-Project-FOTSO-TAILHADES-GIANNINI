@@ -1,155 +1,231 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "hasse.h"
 #include "matrix.h"
+#include "utils.h"
 
+// Utility function to clear the input buffer (prevents menu skipping issues)
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
-
+// Function to free memory using your existing cleanup functions
+void cleanMemory(t_adjacency_list** graph, t_tarjan_vertex** vertices, t_partition* p, t_matrix* M, int* is_partition_computed, int* is_matrix_computed) {
+    if (*graph != NULL) {
+        freeAdjList(*graph); // Function from hasse.h
+        *graph = NULL;
+    }
+    if (*vertices != NULL) {
+        free(*vertices); // Standard free, as no specific function exists
+        *vertices = NULL;
+    }
+    if (*is_partition_computed) {
+        freePartition(p); // Function from hasse.h
+        *is_partition_computed = 0;
+    }
+    if (*is_matrix_computed) {
+        freeMatrix(*M); // Function from matrix.h
+        *is_matrix_computed = 0;
+    }
+    printf("--> Memory cleaned.\n");
+}
 
 int main() {
-    printf("Les grandes étapes de ce qu'on a pour le moment ");
-    printf("--- stack test ---\n");
-    t_stack* stack = createStack(10);
-    printf("Pile vide ? (1=oui, 0=non): %d\n", isEmpty(stack));
-    printf("Push 5...\n");
-    push(stack, 5);
-    printf("Push 10...\n");
-    push(stack, 10);
-    printf("Pile vide ? (1=oui, 0=non): %d\n", isEmpty(stack));
-    printf("Pop: %d\n", pop(stack));
-    printf("Pop: %d\n", pop(stack));
-    printf("Pile vide ? (1=oui, 0=non): %d\n", isEmpty(stack));
-    freeStack(stack);
-    printf("stack working sir\n\n");
+    // Main variables
+    t_adjacency_list* graph = NULL;
+    t_tarjan_vertex* vertices = NULL;
+    t_partition p;      // Partition structure returned by tarjan()
+    t_matrix M;         // Transition matrix
+    t_link_array links; // Link array for Hasse diagram
 
-    printf("--- 1. Test Lecture Graphe ---\n");
-    t_adjacency_list* graph = readGraph("../data/exemple_meteo.txt");
-    if (graph == NULL) {
-        printf("Erreur: check si c'est bien :  'graphe_4v.txt'.\n");
+    // Program state flags
+    int is_loaded = 0;
+    int is_partition_computed = 0;
+    int is_matrix_computed = 0;
 
-        return 1;
+    int choice = -1;
+    char filename[256];
+
+    printf("==========================================\n");
+    printf("   MARKOV PROJECT INTERFACE - TI301\n");
+    printf("==========================================\n");
+
+    while (choice != 0) {
+        printf("\n--- MAIN MENU ---\n");
+        if (is_loaded) {
+            printf("Active file: %s (%d vertices)\n", filename, graph->size);
+        } else {
+            printf("No file loaded.\n");
+        }
+        printf("-----------------\n");
+        printf("1. Load a graph file\n");
+
+        if (is_loaded) {
+            printf("2. Display Graph (Adjacency List)\n");
+            printf("3. Generate/Display Transition Matrix\n");
+            printf("4. Check Markov Property\n");
+            printf("5. Compute Classes (Tarjan's Algo)\n");
+
+            if (is_partition_computed) {
+                printf("6. Compute and Display Links (Hasse Diagram)\n");
+                printf("7. Analyze Characteristics (Transient/Persistent)\n");
+                printf("8. Analyze Sub-Matrices by Class (Stationary Distributions)\n");
+            }
+            printf("9. Export Graph for Mermaid (graph.txt)\n");
+        }
+        printf("0. Quit\n");
+        printf("Your choice: ");
+
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input.\n");
+            clearInputBuffer();
+            continue;
+        }
+        clearInputBuffer(); // Consume the newline character
+
+        switch (choice) {
+            case 1: // LOAD FILE
+                if (is_loaded) {
+                    cleanMemory(&graph, &vertices, &p, &M, &is_partition_computed, &is_matrix_computed);
+                    is_loaded = 0;
+                }
+                printf("Enter file path (e.g., ../data/exemple1.txt): ");
+                if (fgets(filename, sizeof(filename), stdin) != NULL) {
+                    filename[strcspn(filename, "\n")] = 0; // Remove the newline char
+
+                    // Check if file exists to prevent readGraph from crashing the program
+                    FILE* f = fopen(filename, "r");
+                    if (f) {
+                        fclose(f);
+                        graph = readGraph(filename); // Call to hasse.h function
+                        if (graph != NULL) {
+                            is_loaded = 1;
+                            // Mandatory initialization for Tarjan (as per project requirements)
+                            vertices = initTarjanVertices(graph->size); // Call to hasse.h
+                            printf("Graph loaded and vertices initialized.\n");
+                        }
+                    } else {
+                        printf("Error: Cannot open '%s'. Please check the path.\n", filename);
+                    }
+                }
+                break;
+
+            case 2: // DISPLAY LIST
+                if (!is_loaded) { printf("Please load a graph first.\n"); break; }
+                displayAdjList(graph); // Call to hasse.h
+                break;
+
+            case 3: // MATRIX
+                if (!is_loaded) { printf("Please load a graph first.\n"); break; }
+                if (!is_matrix_computed) {
+                    M = createTransitionMatrix(graph); // Call to matrix.h
+                    is_matrix_computed = 1;
+                }
+                displayMatrix(M); // Call to matrix.h
+                break;
+
+            case 4: // MARKOV CHECK
+                if (!is_loaded) { printf("Please load a graph first.\n"); break; }
+                isMarkov(graph); // Call to hasse.h
+                break;
+
+            case 5: // TARJAN (CLASSES)
+                if (!is_loaded) { printf("Please load a graph first.\n"); break; }
+                if (is_partition_computed) freePartition(&p); // Clean up if re-running
+
+                // Reset vertices (necessary if re-running algorithm)
+                free(vertices);
+                vertices = initTarjanVertices(graph->size);
+
+                p = tarjan(graph, vertices); // Core algorithm from hasse.h
+                is_partition_computed = 1;
+
+                printf("Detected Class Partition:\n");
+                displayPartition(p); // Call to hasse.h
+                break;
+
+            case 6: // LINKS / HASSE
+                if (!is_partition_computed) { printf("Please run step 5 (Tarjan) first.\n"); break; }
+
+                links = createEmptyLinkArray(graph->size); // Call to hasse.h
+                makeLinks(&links, vertices, *graph, p);    // Call to hasse.h
+
+                // Optional: simplify transitive links for a proper Hasse diagram
+                removeTransitiveLinks(&links); // Call to hasse.h
+
+                printf("Links between classes (Hasse Diagram):\n");
+                displayLinksArray(links, p); // Call to hasse.h
+
+                // No freeLinkArray in headers, freeing internal array manually
+                free(links.links);
+                break;
+
+            case 7: // CHARACTERISTICS
+                if (!is_partition_computed) { printf("Please run step 5 (Tarjan) first.\n"); break; }
+
+                // Re-create links temporarily as the function needs them
+                links = createEmptyLinkArray(graph->size);
+                makeLinks(&links, vertices, *graph, p);
+
+                getCharacteristics(links, p); // Call to hasse.h (prints Transient/Persistent)
+
+                free(links.links);
+                break;
+
+            case 8: // SUB-MATRICES & STATIONARY DISTRIBUTION
+                if (!is_partition_computed) { printf("Please run step 5 (Tarjan) first.\n"); break; }
+                if (!is_matrix_computed) {
+                    M = createTransitionMatrix(graph);
+                    is_matrix_computed = 1;
+                }
+
+                printf("\n--- Analysis by Class ---\n");
+                t_partition_cell *curr = p.classes.head;
+                int idx = 0;
+
+                // Loop through ALL classes in the partition
+                while (curr != NULL) {
+                    printf("\n>>> Class: %s\n", curr->class.name);
+
+                    // Extract sub-matrix (Call to matrix.h)
+                    t_matrix subM = subMatrix(M, p, idx);
+                    printf("Sub-matrix:\n");
+                    displayMatrix(subM);
+
+                    // Compute stationary distribution (Call to matrix.h)
+                    printf("Stationary distribution for %s:\n", curr->class.name);
+                    t_matrix stat = stationaryDistribution(subM);
+                    displayMatrix(stat);
+
+                    // Free temporary matrices for this iteration
+                    freeMatrix(subM);
+                    freeMatrix(stat);
+
+                    curr = curr->next;
+                    idx++;
+                }
+                printf("\n--- End of Analysis ---\n");
+                break;
+
+            case 9: // MERMAID EXPORT
+                if (!is_loaded) { printf("Please load a graph first.\n"); break; }
+                Markov_to_graph(graph); // Call to hasse.h
+                printf("File generated: ../graph.txt\n");
+                break;
+
+            case 0:
+                printf("Exiting program. Goodbye!\n");
+                break;
+
+            default:
+                printf("Unknown choice.\n");
+        }
     }
-    printf("\n--- 2. Matrix Operations Test ---\n");
 
-    // Create transition matrix from graph
-    t_matrix M = createTransitionMatrix(graph);
-    printf("Transition matrix M:\n");
-    displayMatrix(M);
-
-    // Calculate M^3
-    printf("Calculating M^3:\n");
-    t_matrix M3 = matrixPower(M, 3);
-    displayMatrix(M3);
-
-    // Calculate M^7
-    printf("Calculating M^7:\n");
-    t_matrix M7 = matrixPower(M, 7);
-    displayMatrix(M7);
-
-    // Find convergence
-    printf("Finding convergence (epsilon = 0.01):\n");
-    t_matrix Mn_prev = createEmptyMatrix(M.rows);
-    t_matrix Mn = createEmptyMatrix(M.rows);
-    copyMatrix(Mn, M);
-
-    int n = 1;
-    float epsilon = 0.01f;
-    float difference;
-
-    do {
-        n++;
-        copyMatrix(Mn_prev, Mn);
-        t_matrix temp = matrixPower(M, n);
-        copyMatrix(Mn, temp);
-        freeMatrix(temp);
-
-        difference = diff(Mn, Mn_prev);
-        printf("n=%d, diff=%.6f\n", n, difference);
-    } while (difference > epsilon && n < 1000);
-
-    printf("\nConvergence reached at n=%d with diff=%.6f\n", n, difference);
-    printf("Stationary distribution (row 1 of M^%d):\n[ ", n);
-    for (int j = 0; j < Mn.cols; j++) {
-        printf("%.4f ", Mn.data[0][j]);
-    }
-    printf("]\n");
-
-    // Cleanup
-
-    displayAdjList(graph);
-
-    printf("--- 3. Markov matrix check  ---\n");
-    isMarkov(graph);
-    printf("\n");
-
-    printf("--- 4. Test Mermaid ---\n");
-    Markov_to_graph(graph);
-    printf("Fichier '../graph.txt' generated \n\n");
-
-    printf("--- 5. Test Initialisation Tarjan ---\n");
-    t_tarjan_vertex* tarjan_vertices = initTarjanVertices(graph->size);
-    printf("Tableau t_tarjan_vertex initialised pour %d sommets :\n", graph->size);
-
-    printf("Sommets = id = identification num,");
-    printf("num = C'est le numero temporaire. Le PDF demande de l'initialiser a -1.\nLe -1 signifie ce sommet n'a pas encore ete visiter par l'algo.\n");
-    printf("lowlink = C'est le numero accessible. Le PDF demande de 'initialiser a -1.\nLe -1 signifie le numero accessible n'a pas encore ete calculer\n");
-    printf("inStack = Cest l'indicateur boolean (0 pour faux). Le PDF demande de l'initialiser a 0.\nLe 0 signifie ce sommet n'est pas actuellement dans la pile de traitement\n");
-
-    for (int i = 0; i < graph->size; i++) {
-        printf("  Sommet %d: id=%d, num=%d, lowlink=%d, inStack=%d\n",
-               i, tarjan_vertices[i].id, tarjan_vertices[i].num,
-               tarjan_vertices[i].lowlink, tarjan_vertices[i].inStack);
-    }
-    printf("--- 6. Test Class functions ---\n");
-    t_class* C1 = createClass("C1");
-    printf("Test: Is class %s empty: %d\n",C1->name,isEmptyClassList(C1->vertices));
-    printf("Test: Adding element in %s\n",C1->name);
-    addClassCell(C1,tarjan_vertices[1]);
-    printf("Test: Is class %s empty: %d\n",C1->name,isEmptyClassList(C1->vertices));
-
-
-    printf("--- 7. Test Partition ---\n");
-    t_partition p = tarjan(graph, tarjan_vertices);
-    displayPartition(p);
-    printf("Partition created. Taille: %d\n", p.size);
-
-    printf("--- 8. Test Links ---\n");
-    t_link_array links = createEmptyLinkArray(graph->size);
-    makeLinks(&links, tarjan_vertices, *graph, p);
-    printf("Links : ");
-    displayLinksArray(links, p);
-
-
-    printf("--- 9. Characteristics ---\n");
-
-    getCharacteristics(links, p);
-
-    printf("--- 10. Test Submatrix Creation ---\n");
-    t_partition_list list_p = p.classes;
-    t_partition_cell *curr = list_p.head;
-    int index = 0;
-    while (curr != NULL) {
-        printf("Submatrix for the class : %s\n",curr->class.name);
-        t_matrix temp = subMatrix(M,p,index);
-        displayMatrix(temp);
-        printf("Stationary distribution for the class : %s\n",curr->class.name);
-        displayMatrix(stationaryDistribution(temp));
-        curr = curr->next;
-        index++;
-    }
-
-
-    printf("--- 10. clean  ---\n");
-    freeMatrix(M);
-    freeMatrix(M3);
-    freeMatrix(M7);
-    freeMatrix(Mn);
-    freeMatrix(Mn_prev);
-    free(tarjan_vertices);
-    freePartition(&p);
-    freeAdjList(graph);
-
-    printf(" Tests finished.\n");
+    // Final cleanup before exit
+    cleanMemory(&graph, &vertices, &p, &M, &is_partition_computed, &is_matrix_computed);
 
     return 0;
 }

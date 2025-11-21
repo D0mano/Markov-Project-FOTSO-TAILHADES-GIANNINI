@@ -169,7 +169,7 @@ void isMarkov(t_adjacency_list* adj) {
 
 void Markov_to_graph(t_adjacency_list* adj) {
     FILE* graph;
-    graph = fopen("../graph.txt", "w");
+    graph = fopen("../graph.mmd", "w");
     fprintf(graph,"---\n"
                         "config:\n"
                         "   theme: neo\n"

@@ -160,7 +160,7 @@ t_matrix subMatrix(t_matrix matrix, t_partition part, int compo_index) {
     t_matrix result = createEmptyMatrix(n);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            result.data[i][j] = matrix.data[class_arr[i]-1][class_arr[j]-1];
+            result.data[i][j] = matrix.data[class_arr[n-i-1]-1][class_arr[n-j-1]-1];
 
         }
     }
