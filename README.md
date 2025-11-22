@@ -13,14 +13,14 @@ Performing probability calculations to study the evolution of distributions and 
 Generating visual representations of graphs in Mermaid flowchart format
 This project emphasizes practical implementation of data structures and algorithms rather than the probabilistic theory behind them.
 
-## Technical tools 
-C 
+## Technical tools  
+C  
 CMake  
 
 Graph algorithms:  
 Tarjan SCC  
 Hasse graph extraction  
-Matrix algebra for Markov chains (from both this year and last year by the way)  
+Matrix algebra for Markov chains (from both this year and last year by the way)
 
 ```text
 Directory structure:
