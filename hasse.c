@@ -203,8 +203,6 @@ t_tarjan_vertex *initTarjanVertices(int n) {
     }
     return vertices;
 }
-
-//CLASS
 t_class_cell* createClassCell(t_tarjan_vertex vertex) {
     t_class_cell* cell = (t_class_cell*) malloc(sizeof(t_class_cell));
     cell->vertex = vertex;
@@ -542,33 +540,39 @@ void getCharacteristics(t_link_array links, t_partition partition) {
         printf("state%s", (c.size == 1) ? " " : "s ");
         t_class_cell* curr = c.vertices.head;
         printf("%d", c.vertices.head->vertex.id);
-        while (curr->next != NULL) {
+        t_class_cell * prev = curr;
+        curr = curr->next;
+        while (curr != NULL) {
             printf(", %d", curr->vertex.id);
+            prev = curr;
             curr = curr->next;
         }
         if (c.size != 1) {
-            printf(" and %d", curr->vertex.id);
+            printf(" and %d", prev->vertex.id);
         }
         printf("%s transient.\n", (c.size == 1) ? " is " : " are ");
 
     }
     while (isEmpty(persistent) == 0) {
         t_class c = getClassFromIndex(pop(persistent), partition);
-        printf("The class");
+        printf("The class ");
         displayClass(c);
         printf(" is persistent - ");
         printf("state%s", (c.size == 1) ? " " : "s ");
         t_class_cell* curr = c.vertices.head;
         printf("%d", c.vertices.head->vertex.id);
-        while (curr->next != NULL) {
+        t_class_cell * prev = curr;
+        curr = curr->next;
+        while (curr != NULL) {
             printf(", %d", curr->vertex.id);
+            prev = curr;
             curr = curr->next;
         }
         if (c.size != 1) {
-            printf(" and %d", curr->vertex.id);
+            printf(" and %d", prev->vertex.id);
         }
         if (c.size == 1) {
-            printf(" is persistent and absorbing.");
+            printf(" is persistent and absorbing.\n");
         } else {
             printf(" are persistent.\n");
         }

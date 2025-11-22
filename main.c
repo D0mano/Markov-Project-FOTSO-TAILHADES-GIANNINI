@@ -4,6 +4,7 @@
 #include "hasse.h"
 #include "matrix.h"
 #include "utils.h"
+#define PATH "../data/"
 
 // Utility function to clear the input buffer (prevents menu skipping issues)
 void clearInputBuffer() {
@@ -47,6 +48,7 @@ int main() {
 
     int choice = -1;
     char filename[256];
+    char c;
 
     printf("==========================================\n");
     printf("   MARKOV PROJECT INTERFACE - TI301\n");
@@ -85,6 +87,7 @@ int main() {
         }
         clearInputBuffer(); // Consume the newline character
 
+
         switch (choice) {
             case 1: // LOAD FILE
                 if (is_loaded) {
@@ -92,14 +95,17 @@ int main() {
                     is_loaded = 0;
                 }
                 printf("Enter file path (e.g., ../data/exemple1.txt): ");
+                char path[256] =  PATH;
+
                 if (fgets(filename, sizeof(filename), stdin) != NULL) {
                     filename[strcspn(filename, "\n")] = 0; // Remove the newline char
-
+                    strcat(path,filename);
+                    printf("%s\n", path);
                     // Check if file exists to prevent readGraph from crashing the program
-                    FILE* f = fopen(filename, "r");
+                    FILE* f = fopen(path, "r");
                     if (f) {
                         fclose(f);
-                        graph = readGraph(filename); // Call to hasse.h function
+                        graph = readGraph(path); // Call to hasse.h function
                         if (graph != NULL) {
                             is_loaded = 1;
                             // Mandatory initialization for Tarjan (as per project requirements)
@@ -107,14 +113,18 @@ int main() {
                             printf("Graph loaded and vertices initialized.\n");
                         }
                     } else {
-                        printf("Error: Cannot open '%s'. Please check the path.\n", filename);
+                        printf("Error: Cannot open '%s'. Please check the path.\n", path);
                     }
                 }
+                printf("Press enter to continue");
+                while (getchar() != '\n');
                 break;
 
             case 2: // DISPLAY LIST
                 if (!is_loaded) { printf("Please load a graph first.\n"); break; }
                 displayAdjList(graph); // Call to hasse.h
+                printf("Press enter to continue");
+                while (getchar() != '\n');
                 break;
 
             case 3: // MATRIX
@@ -124,11 +134,15 @@ int main() {
                     is_matrix_computed = 1;
                 }
                 displayMatrix(M); // Call to matrix.h
+                printf("Press enter to continue");
+                while (getchar() != '\n');
                 break;
 
             case 4: // MARKOV CHECK
                 if (!is_loaded) { printf("Please load a graph first.\n"); break; }
                 isMarkov(graph); // Call to hasse.h
+                printf("Press enter to continue");
+                while (getchar() != '\n');
                 break;
 
             case 5: // TARJAN (CLASSES)
@@ -144,6 +158,8 @@ int main() {
 
                 printf("Detected Class Partition:\n");
                 displayPartition(p); // Call to hasse.h
+                printf("Press enter to continue");
+                while (getchar() != '\n');
                 break;
 
             case 6: // LINKS / HASSE
@@ -160,6 +176,8 @@ int main() {
 
                 // No freeLinkArray in headers, freeing internal array manually
                 free(links.links);
+                printf("Press enter to continue");
+                while (getchar() != '\n');
                 break;
 
             case 7: // CHARACTERISTICS
@@ -172,6 +190,8 @@ int main() {
                 getCharacteristics(links, p); // Call to hasse.h (prints Transient/Persistent)
 
                 free(links.links);
+                printf("Press enter to continue");
+                while (getchar() != '\n');
                 break;
 
             case 8: // SUB-MATRICES & STATIONARY DISTRIBUTION
@@ -207,6 +227,8 @@ int main() {
                     idx++;
                 }
                 printf("\n--- End of Analysis ---\n");
+                printf("Press enter to continue");
+                while (getchar() != '\n');
                 break;
 
             case 9: // MERMAID EXPORT
@@ -221,8 +243,10 @@ int main() {
 
             default:
                 printf("Unknown choice.\n");
+
         }
     }
+
 
     // Final cleanup before exit
     cleanMemory(&graph, &vertices, &p, &M, &is_partition_computed, &is_matrix_computed);
