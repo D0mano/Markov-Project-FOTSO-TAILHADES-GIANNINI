@@ -1,3 +1,4 @@
+```text
 Directory structure:
 └── d0mano-markov-project-fotso-tailhades-giannini/
     ├── CMakeLists.txt
