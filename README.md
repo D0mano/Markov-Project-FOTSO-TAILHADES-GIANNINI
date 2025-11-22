@@ -1,7 +1,26 @@
 # Markov project 
 ## Nolann Fotso, Loic Giannini and Benoit Tailhades (P2-Int 3 2025)
 
-The aim of this project is to implement automatic processing and visualization of Markov graphs, which are representations of discrete-time Markov chains. The program must load graph data from text files, build an adjacency-list structure, verify that the graph satisfies the properties of a valid Markov chain, and finally generate visual representations of the graph using the Mermaid format. 
+This project is part of the TI301 – Algorithms and Data Structures 2 course and is carried out in collaboration with the Mathematics Department. Its goal is to process, analyze, and visualize discrete-time Markov graphs, focusing on the structural and probabilistic properties associated with Markov chains.
+
+## Aim of the Project
+The objective of this project is to design a C program capable of:
+Loading Markov graph data from input files
+Building an adjacency-list representation of the graph
+Validating that the graph satisfies the mathematical conditions of a Markov chain
+Extracting graph components and properties (Tarjan algorithm, graph partitioning, Hasse diagram, transient/persistent states, etc.)
+Performing probability calculations to study the evolution of distributions and stationary states
+Generating visual representations of graphs in Mermaid flowchart format
+This project emphasizes practical implementation of data structures and algorithms rather than the probabilistic theory behind them.
+
+## Technical tools 
+C
+CMake
+
+Graph algorithms:
+Tarjan SCC
+Hasse graph extraction
+Matrix algebra for Markov chains (from both this year and last year by the way)
 
 ```text
 Directory structure:
