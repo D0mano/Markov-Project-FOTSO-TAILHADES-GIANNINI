@@ -1,3 +1,8 @@
+# Markov project 
+## Nolann Fotso, Loic Giannini and Benoit Tailhades (P2-Int 3 2025)
+
+
+
 ```text
 Directory structure:
 └── d0mano-markov-project-fotso-tailhades-giannini/
