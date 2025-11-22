@@ -1,0 +1,36 @@
+Directory structure:
+└── d0mano-markov-project-fotso-tailhades-giannini/
+    ├── CMakeLists.txt
+    ├── graph.mmd
+    ├── graph.txt
+    ├── hasse.c
+    ├── hasse.h
+    ├── main.c
+    ├── matrix.c
+    ├── matrix.h
+    ├── types.h
+    ├── utils.c
+    ├── utils.h
+    └── data/
+        ├── exemple1.txt
+        ├── exemple1_chatGPT_fixed.txt
+        ├── exemple1_chatGPT_fixed_graph.mmd
+        ├── exemple1_chatGPT_fixed_hasse.mmd
+        ├── exemple1_from_chatGPT.txt
+        ├── exemple1_graph.mmd
+        ├── exemple1_hasse.mmd
+        ├── exemple2.txt
+        ├── exemple2_graph.mmd
+        ├── exemple2_hasse.mmd
+        ├── exemple3.txt
+        ├── exemple3_graph.mmd
+        ├── exemple3_hasse.mmd
+        ├── exemple4_2check.txt
+        ├── exemple_hasse1.txt
+        ├── exemple_meteo.txt
+        ├── exemple_meteo_graph.mmd
+        ├── exemple_meteo_hasse.mmd
+        ├── exemple_scc1.txt
+        ├── exemple_valid_step3.txt
+        ├── exemple_valid_step3_graph.mmd
+        └── exemple_valid_step3_hasse.mmd
