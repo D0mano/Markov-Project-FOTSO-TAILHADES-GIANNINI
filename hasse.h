@@ -89,12 +89,6 @@ t_tarjan_vertex *initTarjanVertices(int n);
  */
 t_class *createClass(const char *name);
 
-typedef struct {
-    int *data;
-    int top;
-    int capacity;
-} t_stack;
-
 /**
  * @brief Create a cell for a class linked list
  * @param vertex The Tarjan vertex to store in the cell
@@ -308,7 +302,6 @@ int * LinkedClass_to_Arrays(t_class class);
  * @param partition The partition of classes
  */
 void getCharacteristics(t_link_array links, t_partition partition);
-
 
 /**
  * @brief Use a list of link to create  into a text file containing the mermaid code of the graph

@@ -67,4 +67,10 @@ typedef struct
     int log_size;    // number of valid links
 } t_link_array;
 
+typedef struct {
+    int *data;
+    int top;
+    int capacity;
+} t_stack;
+
 #endif

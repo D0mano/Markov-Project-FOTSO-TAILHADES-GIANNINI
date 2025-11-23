@@ -94,7 +94,7 @@ int main() {
                     cleanMemory(&graph, &vertices, &p, &M, &is_partition_computed, &is_matrix_computed);
                     is_loaded = 0;
                 }
-                printf("Enter file path (e.g., ../data/exemple1.txt): ");
+                printf("Enter file path (e.g., exemple1.txt): ");
                 char path[256] =  PATH;
 
                 if (fgets(filename, sizeof(filename), stdin) != NULL) {

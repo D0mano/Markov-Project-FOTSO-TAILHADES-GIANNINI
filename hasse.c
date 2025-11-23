@@ -497,8 +497,6 @@ int * LinkedClass_to_Arrays(t_class class) {
     return array;
 }
 
-
-
 int isValInArray(int* arr, int val, int size) {
     for (int i=0; i < size; i++) {
         if (arr[i] == val) {
