@@ -86,4 +86,16 @@ t_matrix subMatrix(t_matrix matrix, t_partition part, int compo_index);
  */
 t_matrix stationaryDistribution(t_matrix matrix);
 
+/**
+ * @brief Calculate the period of a strongly connected component (class) in a Markov chain
+ *
+ * The period of a state is the GCD of all possible return times to that state.
+ * This function computes successive powers of the transition matrix and identifies
+ * at which steps it's possible to return to a state (diagonal elements > 0).
+ *
+ * @param sub_matrix The transition matrix of the class
+ * @return The period (GCD of all return times)
+ */
+int getPeriod(t_matrix sub_matrix);
+
 #endif

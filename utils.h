@@ -16,4 +16,8 @@ char *getID(int num);
  */
 int min(int a, int b);
 
+char class_to_letter(const char* str);
+
+int gcd(int* vals,int nbvals);
+
 #endif

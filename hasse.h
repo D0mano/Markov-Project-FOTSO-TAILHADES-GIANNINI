@@ -309,4 +309,12 @@ int * LinkedClass_to_Arrays(t_class class);
  */
 void getCharacteristics(t_link_array links, t_partition partition);
 
+
+/**
+ * @brief Use a list of link to create  into a text file containing the mermaid code of the graph
+ * @param link
+ * @param p
+ */
+void Link_to_Graph(t_link_array link,t_partition p);
+
 #endif

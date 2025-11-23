@@ -35,8 +35,26 @@ char *getID(int num) {
 
     return result;
 }
+char class_to_letter(const char* str) {
+    int num = str[1] - '0';
+    return 'A' + (num - 1);
+}
 
 int min(int a,int b) {
     return a < b ? a : b;
 }
-
+int gcd( int *vals, int nbvals) {
+    if (nbvals == 0) return 0;
+    int result = vals[0];
+    for (int i = 1; i < nbvals; i++) {
+        int a = result;
+        int b = vals[i];
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        result = a;
+    }
+    return result;
+}

@@ -6,6 +6,7 @@
 #include <math.h>
 #include "matrix.h"
 #include "hasse.h"
+#include "utils.h"
 
 t_matrix createTransitionMatrix(t_adjacency_list* adj) {
     t_matrix matrix;
@@ -184,7 +185,65 @@ t_matrix stationaryDistribution(t_matrix matrix) {
         freeMatrix(temp);
 
         difference = diff(Mn, Mn_prev);
-        //printf("n=%d, diff=%.6f\n", n, difference);
     } while (difference > epsilon && n < 1000);
     return Mn;
+}
+
+
+int getPeriod(t_matrix sub_matrix)
+{
+    // Get the size of the matrix (number of states in the class)
+    int n = sub_matrix.rows;
+
+    // Array to store the powers k where M^k has non-zero diagonal elements
+    // (i.e., steps where return to a state is possible)
+    int *periods = (int *)malloc(n * sizeof(int));
+    int period_count = 0;  // Counter for number of return times found
+
+    int cpt = 1;  // Current power being computed
+
+    // Matrix to hold M^k (current power of the matrix)
+    t_matrix power_matrix = createEmptyMatrix(n);
+
+    // Temporary matrix to store multiplication result
+    t_matrix result_matrix = createEmptyMatrix(n);
+
+    // Initialize power_matrix with M^1 (the original matrix)
+    copyMatrix(power_matrix, sub_matrix);
+
+    // Iterate through powers M^1, M^2, ..., M^n
+    for (cpt = 1; cpt <= n; cpt++)
+    {
+        // Flag to check if at least one diagonal element is non-zero
+        int diag_nonzero = 0;
+
+        // Check all diagonal elements of M^cpt
+        for (int i = 0; i < n; i++)
+        {
+            // If M^k[i][i] > 0, there exists a path of length k from state i to itself
+            if (power_matrix.data[i][i] > 0.0f)
+            {
+                diag_nonzero = 1;  // Mark that we found at least one return path
+            }
+        }
+
+        // If we found any return paths at step k, store k in the periods array
+        if (diag_nonzero) {
+            periods[period_count] = cpt;  // Store the return time
+            period_count++;  // Increment the count
+        }
+
+        // Compute the next power: M^(k+1) = M^k * M
+        multiplyMatrices(power_matrix, sub_matrix, result_matrix);
+
+        // Update power_matrix to hold the new power
+        copyMatrix(power_matrix, result_matrix);
+    }
+
+    // The period is the GCD (Greatest Common Divisor) of all return times
+    // Period = 1 means aperiodic (can return at any step)
+    // Period > 1 means periodic (can only return every d steps)
+    freeMatrix(power_matrix);
+    freeMatrix(result_matrix);
+    return gcd(periods, period_count);
 }

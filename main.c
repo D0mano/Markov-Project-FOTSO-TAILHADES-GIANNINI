@@ -48,7 +48,7 @@ int main() {
 
     int choice = -1;
     char filename[256];
-    char c;
+
 
     printf("==========================================\n");
     printf("   MARKOV PROJECT INTERFACE - TI301\n");
@@ -73,7 +73,7 @@ int main() {
             if (is_partition_computed) {
                 printf("6. Compute and Display Links (Hasse Diagram)\n");
                 printf("7. Analyze Characteristics (Transient/Persistent)\n");
-                printf("8. Analyze Sub-Matrices by Class (Stationary Distributions)\n");
+                printf("8. Analyze Sub-Matrices by Class (Stationary Distributions and Periodicity)\n");
             }
             printf("9. Export Graph for Mermaid (graph.txt)\n");
         }
@@ -174,6 +174,9 @@ int main() {
                 printf("Links between classes (Hasse Diagram):\n");
                 displayLinksArray(links, p); // Call to hasse.h
 
+                Link_to_Graph(links, p);
+                printf("File generated : ../graph_class.mmd\n");
+
                 // No freeLinkArray in headers, freeing internal array manually
                 free(links.links);
                 printf("Press enter to continue");
@@ -219,6 +222,9 @@ int main() {
                     t_matrix stat = stationaryDistribution(subM);
                     displayMatrix(stat);
 
+                    // Compute the periodicity
+                    printf("The Class %s as a periodicity of %d",curr->class.name,getPeriod(subM));
+
                     // Free temporary matrices for this iteration
                     freeMatrix(subM);
                     freeMatrix(stat);
@@ -226,6 +232,7 @@ int main() {
                     curr = curr->next;
                     idx++;
                 }
+                free(curr);
                 printf("\n--- End of Analysis ---\n");
                 printf("Press enter to continue");
                 while (getchar() != '\n');

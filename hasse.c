@@ -508,6 +508,43 @@ int isValInArray(int* arr, int val, int size) {
     return 0;
 }
 
+void Link_to_Graph(t_link_array link, t_partition p) {
+
+    FILE* graph;
+    graph = fopen("../graph_class.mmd", "w");
+    fprintf(graph,"---\n"
+                        "config:\n"
+                        "   theme: neo\n"
+                        "   look: neo\n"
+                        "   layout: elk\n"
+                        "---");
+    fprintf(graph, "\n\n"
+                        "flowchart LR\n");
+    for (int i = 0; i < p.size; i++) {
+        t_class class = getClassFromIndex(i,p);
+        char class_rep[50] = "\"{";
+        t_class_cell * curr = class.vertices.head;
+        for (int j = 0; j < class.size-1; j++) {
+            char nb[50];
+            sprintf(nb,"%d",curr->vertex.id);
+            strcat(class_rep, nb);
+            strcat(class_rep, ",");
+            curr = curr->next;
+        }
+        char nb[50];
+        sprintf(nb,"%d",curr->vertex.id);
+        strcat(class_rep, nb);
+        strcat(class_rep, "}\"");
+        fprintf(graph,"%c[%s]\n",class_to_letter(class.name),class_rep);
+    }
+    fprintf(graph, "\n");
+    for (int i=0; i < link.log_size; i++) {
+        fprintf(graph,"%c --> %c\n",class_to_letter(getClassFromIndex(link.links[i].from,p).name),class_to_letter(getClassFromIndex(link.links[i].to,p).name));
+    }
+    fclose(graph);
+
+}
+
 void getCharacteristics(t_link_array links, t_partition partition) {
     printf("The Markov graph is%sirreducible\n", (partition.size == 1) ? " " : " not ");
     int* transient = malloc(partition.size*sizeof(int));
