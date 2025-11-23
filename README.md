@@ -3,15 +3,43 @@
 
 This project is part of the TI301 – Algorithms and Data Structures 2 course and is carried out in collaboration with the Mathematics Department. Its goal is to process, analyze, and visualize discrete-time Markov graphs, focusing on the structural and probabilistic properties associated with Markov chains.
 
-## Aim of the Project
-The objective of this project is to design a C program capable of:
-Loading Markov graph data from input files
-Building an adjacency-list representation of the graph
-Validating that the graph satisfies the mathematical conditions of a Markov chain
-Extracting graph components and properties (Tarjan algorithm, graph partitioning, Hasse diagram, transient/persistent states, etc.)
-Performing probability calculations to study the evolution of distributions and stationary states
-Generating visual representations of graphs in Mermaid flowchart format
-This project emphasizes practical implementation of data structures and algorithms rather than the probabilistic theory behind them.
+##  What is this?
+We built this tool to analyze **Markov Graphs**.
+
+In simple terms, a Markov graph is a map of "states" (like weather: Sunny, Rainy, Cloudy) with probabilities of moving from one to another. Our program reads these maps, checks if they are valid, groups them logically, and uses math to predict what happens in the future.
+
+---
+
+##  How the code is organized
+
+| File | What it does |
+| :--- | :--- |
+| **`main.c`** | **The Manager.** It runs the whole show, step by step. |
+| **`utils.c`** | **The Helper.** Reads your text files and runs the Tarjan algorithm to find groups. |
+| **`hasse.c`** | **The Organizer.** figures out the "big picture" connections between groups. |
+| **`matrix.c`** | **The Calculator.** Handles all the probability math and predictions. |
+| **`types.h`** | **The Blueprints.** Defines what a Graph, a List, or a Matrix looks like. |
+
+---
+
+##  Key Features (How it works)
+
+### 1. Reading & Checking (`utils.c`)
+* **`readGraph`**: Reads a simple text file where you list connections (Start -> End -> Probability) and builds the graph in memory
+* **`isMarkovGraph`**: acts like a security guard. It checks every node to make sure the outgoing probabilities add up to exactly 1 (100%). If they don't, it warns you that the math won't work
+* **`generateMermaidCode`**: **The Artist.** It turns our code into a text format that the [Mermaid](https://mermaid.live) website can turn into a beautiful diagram.
+
+### 2. Grouping & Structure (Tarjan & Hasse)
+* **`tarjan`**: This uses a smart algorithm to find "communities" (classes). A community is a group of nodes where everyone can reach everyone else.
+* **`buildHasseGraph`**: Once we find the communities, this function draws a simple map showing how you travel *between* the communities.
+* **`classifyComponents`**: It gives each group a label:
+    * **Transient:** You can leave this group and never come back.
+    * **Persistent:** Once you enter, you are stuck here forever.
+
+### 3. Predicting the Future (`matrix.c`)
+* **`listToMatrix`**: Converts our graph into a grid of numbers (a matrix) so we can do math with it.
+* **`findStationaryDistribution`**: **The Crystal Ball.** It multiplies the matrix over and over to see what happens in the long run. For example, "In 100 days, what is the chance of rain?".
+* **`getPeriod` (Bonus)**: Checks if a group goes in circles. For example, if you can only return to the start every 3 steps, this function figures that out.
 
 ## Technical tools  
 C  
@@ -21,64 +49,6 @@ Graph algorithms:
 Tarjan SCC  
 Hasse graph extraction  
 Matrix algebra for Markov chains (from both this year and last year by the way)
-
-# TI301 - Étude des Graphes de Markov
-
-**Auteurs :** Nolann Fotso, Loïc Giannini, Benoît Tailhades
-**Contexte :** Projet conjoint Informatique & Mathématiques (Algorithmique 2)
-
-## 🎯 Objectif
-Ce projet implémente une suite d'outils en C pour l'analyse, la validation et la visualisation de chaînes de Markov à temps discret. Il traite les graphes orientés pondérés pour en extraire les propriétés structurelles et probabilistes.
-
----
-
-## 📂 Organisation du Code
-
-| Fichier | Rôle Principal |
-| :--- | :--- |
-| **`main.c`** | Point d'entrée, orchestration des étapes (chargement -> analyse -> calcul). |
-| **`utils.c/h`** | Gestion I/O (lecture fichiers), algo de **Tarjan**, export Mermaid. |
-| **`hasse.c/h`** | Gestion du diagramme de **Hasse** et classification des composants. |
-| **`matrix.c/h`** | Opérations matricielles ($M^n$, distributions stationnaires). |
-| **`types.h`** | Structures de données (Listes d'adjacence, Matrices, Partitions). |
-
----
-
-## 🔑 Fonctions Clés (Core Logic)
-
-### 1. Représentation & Validation (`utils.c`)
-* [cite_start]**`readGraph`** : Charge un fichier `.txt` (format `src dest proba`) vers une liste d'adjacence dynamique[cite: 633].
-* [cite_start]**`isMarkovGraph`** : Vérifie la propriété fondamentale de Markov : la somme des probabilités sortantes de chaque nœud doit être égale à 1 (avec tolérance flottante)[cite: 527].
-* [cite_start]**`generateMermaidCode`** : Génère le code source pour la visualisation graphique via MermaidJS[cite: 694].
-
-### 2. Analyse Structurelle (Tarjan & Hasse)
-* [cite_start]**`tarjan`** (`utils.c`) : Implémente l'algorithme de Tarjan (parcours en profondeur + pile) pour partitionner le graphe en **Composantes Fortement Connexes (SCC)** ou "classes"[cite: 297].
-* [cite_start]**`buildHasseGraph`** (`hasse.c`) : Construit le graphe des classes (diagramme de Hasse) représentant les transitions irréversibles entre les composants[cite: 382].
-* **`classifyComponents`** : Détermine la nature des classes :
-    * *Transitoire* : On peut en sortir.
-    * *Persistante* : Une fois dedans, on ne peut plus en sortir.
-    * [cite_start]*Absorbante* : Classe persistante à un seul état[cite: 496].
-
-### 3. Calculs de Probabilités (`matrix.c`)
-* [cite_start]**`listToMatrix`** : Convertit la liste d'adjacence en matrice de transition $M$ $N \times N$ pour les calculs algébriques[cite: 119].
-* [cite_start]**`findStationaryDistribution`** : Calcule la distribution limite $\Pi^*$ en itérant $M^n$ jusqu'à ce que la différence soit négligeable ($\epsilon < 0.01$)[cite: 129].
-* [cite_start]**`subMatrix`** : Isole la sous-matrice d'une composante connexe spécifique pour calculer sa distribution stationnaire locale[cite: 155].
-* [cite_start]**`getPeriod`** (Bonus) : Calcule la périodicité d'une classe via le PGCD des longueurs de cycles de retour[cite: 221].
-
----
-
-## 🚀 Compilation & Usage
-
-Pré-requis : `cmake`, `gcc`.
-
-```bash
-# Compilation
-mkdir build && cd build
-cmake ..
-make
-
-# Exécution
-./markov_project
 
 ```text
 Directory structure:
