@@ -50,6 +50,7 @@ Tarjan SCC
 Hasse graph extraction  
 Matrix algebra for Markov chains (from both this year and last year by the way)
 
+## The exact structure of our project 
 ```text
 Directory structure:
 └── d0mano-markov-project-fotso-tailhades-giannini/
