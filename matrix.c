@@ -33,15 +33,15 @@ t_matrix createTransitionMatrix(t_adjacency_list* adj) {
     return matrix;
 }
 
-t_matrix createEmptyMatrix(int n) {
+t_matrix createEmptyMatrix(int r,int c) {
     t_matrix matrix;
-    matrix.rows = n;
-    matrix.cols = n;
+    matrix.rows = r;
+    matrix.cols = c;
 
     // Allocate and initialize to 0
-    matrix.data = (float**)malloc(n * sizeof(float*));
-    for (int i = 0; i < n; i++) {
-        matrix.data[i] = (float*)calloc(n, sizeof(float));
+    matrix.data = (float**)malloc(r * sizeof(float*));
+    for (int i = 0; i < c; i++) {
+        matrix.data[i] = (float*)calloc(c, sizeof(float));
     }
 
     return matrix;
@@ -63,6 +63,9 @@ void copyMatrix(t_matrix dest, t_matrix src) {
 void multiplyMatrices(t_matrix m1, t_matrix m2, t_matrix result) {
     if (m1.cols != m2.rows || m1.rows != result.rows || m2.cols != result.cols) {
         printf("Error: Matrix dimensions incompatible for multiplication\n");
+        return;
+    }
+    if (!result.data || !m1.data || !m2.data) {
         return;
     }
 
@@ -121,20 +124,20 @@ void freeMatrix(t_matrix matrix) {
 t_matrix matrixPower(t_matrix matrix, int n) {
     if (n < 0) {
         printf("Error: Negative power not supported\n");
-        return createEmptyMatrix(0);
+        return createEmptyMatrix(0, 0);
     }
 
     if (n == 0) {
         // Return identity matrix
-        t_matrix identity = createEmptyMatrix(matrix.rows);
+        t_matrix identity = createEmptyMatrix(matrix.rows, matrix.cols);
         for (int i = 0; i < matrix.rows; i++) {
             identity.data[i][i] = 1.0f;
         }
         return identity;
     }
 
-    t_matrix result = createEmptyMatrix(matrix.rows);
-    t_matrix temp = createEmptyMatrix(matrix.rows);
+    t_matrix result = createEmptyMatrix(matrix.rows, matrix.cols);
+    t_matrix temp = createEmptyMatrix(matrix.rows, matrix.cols);
 
     // Copy matrix to result (M^1)
     copyMatrix(result, matrix);
@@ -158,7 +161,7 @@ t_matrix subMatrix(t_matrix matrix, t_partition part, int compo_index) {
     t_class class = curr->class;
     int* class_arr = LinkedClass_to_Arrays(class);
     int n = class.size;
-    t_matrix result = createEmptyMatrix(n);
+    t_matrix result = createEmptyMatrix(n, n);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             result.data[i][j] = matrix.data[class_arr[n-i-1]-1][class_arr[n-j-1]-1];
@@ -170,8 +173,8 @@ t_matrix subMatrix(t_matrix matrix, t_partition part, int compo_index) {
 }
 
 t_matrix stationaryDistribution(t_matrix matrix) {
-    t_matrix Mn_prev = createEmptyMatrix(matrix.rows);
-    t_matrix Mn = createEmptyMatrix(matrix.rows);
+    t_matrix Mn_prev = createEmptyMatrix(matrix.rows, matrix.cols);
+    t_matrix Mn = createEmptyMatrix(matrix.rows, matrix.cols);
     copyMatrix(Mn, matrix);
 
     int n = 1;
@@ -203,10 +206,10 @@ int getPeriod(t_matrix sub_matrix)
     int cpt = 1;  // Current power being computed
 
     // Matrix to hold M^k (current power of the matrix)
-    t_matrix power_matrix = createEmptyMatrix(n);
+    t_matrix power_matrix = createEmptyMatrix(n, n);
 
     // Temporary matrix to store multiplication result
-    t_matrix result_matrix = createEmptyMatrix(n);
+    t_matrix result_matrix = createEmptyMatrix(n, n);
 
     // Initialize power_matrix with M^1 (the original matrix)
     copyMatrix(power_matrix, sub_matrix);
@@ -246,4 +249,16 @@ int getPeriod(t_matrix sub_matrix)
     freeMatrix(power_matrix);
     freeMatrix(result_matrix);
     return gcd(periods, period_count);
+}
+
+t_matrix getDistribution(int n, float* state, t_matrix P) {
+    int size = P.cols;
+    t_matrix distribution = createEmptyMatrix(1, size);
+    for (int i = 0; i < size; i++) {
+        distribution.data[0][i] = state[i];
+    }
+    t_matrix result = createEmptyMatrix(1, size);
+    t_matrix Mn = matrixPower(P, n);
+    multiplyMatrices(distribution, Mn, result);
+    return result;
 }

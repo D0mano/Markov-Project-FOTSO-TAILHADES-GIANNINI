@@ -22,10 +22,11 @@ t_matrix createTransitionMatrix(t_adjacency_list* adj);
 
 /**
  * @brief Creates an empty n x n matrix filled with zeros
- * @param n The size of the matrix (n x n)
+ * @param r rows
+ * @param c columns
  * @return An empty matrix
  */
-t_matrix createEmptyMatrix(int n);
+t_matrix createEmptyMatrix(int r, int c);
 
 /**
  * @brief Copies values from one matrix to another of the same size
@@ -97,5 +98,7 @@ t_matrix stationaryDistribution(t_matrix matrix);
  * @return The period (GCD of all return times)
  */
 int getPeriod(t_matrix sub_matrix);
+
+t_matrix createEmptyDistribution();
 
 #endif
