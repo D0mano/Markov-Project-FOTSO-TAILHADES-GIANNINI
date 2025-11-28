@@ -40,7 +40,7 @@ t_matrix createEmptyMatrix(int r,int c) {
 
     // Allocate and initialize to 0
     matrix.data = (float**)malloc(r * sizeof(float*));
-    for (int i = 0; i < c; i++) {
+    for (int i = 0; i < r; i++) {
         matrix.data[i] = (float*)calloc(c, sizeof(float));
     }
 
@@ -122,36 +122,48 @@ void freeMatrix(t_matrix matrix) {
 }
 
 t_matrix matrixPower(t_matrix matrix, int n) {
+
     if (n < 0) {
-        printf("Error: Negative power not supported\n");
         return createEmptyMatrix(0, 0);
     }
 
     if (n == 0) {
-        // Return identity matrix
         t_matrix identity = createEmptyMatrix(matrix.rows, matrix.cols);
         for (int i = 0; i < matrix.rows; i++) {
             identity.data[i][i] = 1.0f;
         }
         return identity;
     }
-
+    printf("%d %d",matrix.rows,matrix.cols);
     t_matrix result = createEmptyMatrix(matrix.rows, matrix.cols);
     t_matrix temp = createEmptyMatrix(matrix.rows, matrix.cols);
 
-    // Copy matrix to result (M^1)
+
+    // Initialisation : result contient M^1
     copyMatrix(result, matrix);
 
-    // Compute M^n
+    if (n == 1) {
+        freeMatrix(temp); // Important : temp a été alloué mais ne sert pas ici
+        return result;
+    }
+
+    // Calcul de M^n pour n > 1
     for (int i = 1; i < n; i++) {
+        // On affiche le détail pour les petits n, ou tous les 100 pas pour les grands n
+        if (n < 20 || i % 100 == 0) {
+        }
+
+        // temp = result * matrix
+        // (c'est-à-dire : Nouvelle_Puissance = Ancienne_Puissance * M)
         multiplyMatrices(result, matrix, temp);
+
+        // On remet temp dans result pour le tour suivant
         copyMatrix(result, temp);
     }
 
-    freeMatrix(temp);
+    freeMatrix(temp); // Toujours libérer la matrice tampon
     return result;
 }
-
 t_matrix subMatrix(t_matrix matrix, t_partition part, int compo_index) {
     t_partition_list partition_list = part.classes;
     t_partition_cell *curr = partition_list.head;
@@ -252,13 +264,31 @@ int getPeriod(t_matrix sub_matrix)
 }
 
 t_matrix getDistribution(int n, float* state, t_matrix P) {
+
     int size = P.cols;
+
+    // 1. Création et vérification du vecteur d'état initial
     t_matrix distribution = createEmptyMatrix(1, size);
+
     for (int i = 0; i < size; i++) {
         distribution.data[0][i] = state[i];
+        printf("%.3f ", state[i]); // Affichage des valeurs brutes
     }
+    printf("]\n");
+
+    // 2. Calcul de la puissance de la matrice
+    t_matrix Mn = matrixPower(P,n);
+
+
+    // 3. Multiplication : Pi_n = Pi_0 * P^n
     t_matrix result = createEmptyMatrix(1, size);
-    t_matrix Mn = matrixPower(P, n);
     multiplyMatrices(distribution, Mn, result);
+
+
+    // --- NETTOYAGE MEMOIRE (CRITIQUE) ---
+    // On libère les matrices intermédiaires
+    freeMatrix(distribution);
+    freeMatrix(Mn);
+
     return result;
 }

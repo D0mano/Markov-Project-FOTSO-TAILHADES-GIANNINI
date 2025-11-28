@@ -69,13 +69,16 @@ int main() {
             printf("3. Generate/Display Transition Matrix\n");
             printf("4. Check Markov Property\n");
             printf("5. Compute Classes (Tarjan's Algo)\n");
+            printf("10. Stationary distribution\n");
+            printf("11. Get stationary Distribution: \n");
+
 
             if (is_partition_computed) {
                 printf("6. Compute and Display Links (Hasse Diagram)\n");
                 printf("7. Analyze Characteristics (Transient/Persistent)\n");
                 printf("8. Analyze Sub-Matrices by Class (Stationary Distributions and Periodicity)\n");
             }
-            printf("9. Export Graph for Mermaid (graph.txt)\n");
+            printf("9. Export Graph for Mermaid (graph.mmd)\n");
         }
         printf("0. Quit\n");
         printf("Your choice: ");
@@ -241,7 +244,71 @@ int main() {
             case 9: // MERMAID EXPORT
                 if (!is_loaded) { printf("Please load a graph first.\n"); break; }
                 Markov_to_graph(graph); // Call to hasse.h
-                printf("File generated: ../graph.txt\n");
+                printf("File generated: ../graph.mmd\n");
+                break;
+
+            case 10 : // Stationary distribition
+                if (!is_loaded) { printf("Please load a graph first.\n"); break; }
+                if (!is_matrix_computed) {
+                    M = createTransitionMatrix(graph);
+                    is_matrix_computed = 1;
+                }
+                int n;
+                printf("Computing the stationary distibution at stage  :");
+                if (scanf("%d", &n) != 1) {
+                    printf("Invalid input.\n");
+                    clearInputBuffer();
+                    continue;
+                }
+                clearInputBuffer(); // Consume the newline character
+                t_matrix Mn = matrixPower(M,n);
+                displayMatrix(Mn);
+                freeMatrix(Mn);
+                printf("Press enter to continue");
+                while (getchar() != '\n');
+                break;
+
+            case 11: // Computing probability distribution
+                if (!is_loaded) { printf("Please load a graph first.\n"); break; }
+                if (!is_matrix_computed) {
+                    M = createTransitionMatrix(graph);
+                    is_matrix_computed = 1;
+                }
+                int size = M.rows;
+                int index = 0;
+                float *state;
+                state = calloc(size ,sizeof(float));
+                while (index != 99){
+                    printf("State to compute (99 to stop):");
+                    if (scanf("%d", &index) != 1 || index < 0 || index > M.rows-1) {
+                        printf("Invalid input.\n");
+                        clearInputBuffer();
+                        continue;
+                    }
+                    clearInputBuffer();
+                    printf("index = %d\n",index);
+                    printf("index = 99 : %d\n",index==99);
+                    if (index != 99) {
+                        float value;
+                        printf("What value for this index: ");
+                        if (scanf("%f", &value) != 1) {
+                            printf("Invalid input.\n");
+                            clearInputBuffer();
+                            continue;
+                        }
+                        clearInputBuffer();
+                        state[index]=value;
+                    }
+
+                }
+                int s;
+                printf("At which step :");
+                scanf("%d",&s);
+                t_matrix distribution = getDistribution(s, state, M);
+                displayMatrix(distribution);
+                printf("\n--- End of Analysis ---\n");
+                printf("Press enter to continue");
+                while (getchar() != '\n');
                 break;
 
             case 0:

@@ -99,6 +99,6 @@ t_matrix stationaryDistribution(t_matrix matrix);
  */
 int getPeriod(t_matrix sub_matrix);
 
-t_matrix createEmptyDistribution();
+t_matrix getDistribution(int n, float* state, t_matrix P);
 
 #endif
